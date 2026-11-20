@@ -1,0 +1,74 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Recursos gratis de Joan García · Fuerte Sin Estrés</title>
+<meta name="description" content="Tests y herramientas de 1-2 minutos para saber qué te frena y por dónde empezar a perder barriga.">
+<meta property="og:title" content="Recursos gratis de Joan García">
+<meta property="og:description" content="Tests y herramientas de 1-2 minutos para saber qué te frena y por dónde empezar.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;700;800;900&display=swap" rel="stylesheet">
+<style>
+  :root{--rojo:#d70438;--fondo:#151515;--card:#202020;--texto:#f4f4f2;--gris:#a3a3a0;--borde:#2e2e2e}
+  *{box-sizing:border-box;margin:0;padding:0}
+  body{font-family:'Inter',system-ui,sans-serif;background:var(--fondo);color:var(--texto);line-height:1.5;min-height:100vh;background-image:radial-gradient(circle at 85% 0%,rgba(215,4,56,.18),transparent 45%)}
+  main{max-width:576px;margin:0 auto;padding:44px 20px 40px}
+  .logo{font-size:19px;letter-spacing:-.03em;color:var(--rojo);margin-bottom:34px}
+  .logo b{font-weight:800}
+  .eyebrow{font-size:13px;font-weight:700;letter-spacing:.14em;text-transform:uppercase;color:var(--rojo)}
+  h1{font-size:38px;line-height:1.08;font-weight:900;letter-spacing:-.035em;margin:10px 0 14px}
+  .sub{font-size:18px;color:var(--gris);font-weight:500}
+  ul{list-style:none;margin-top:34px;display:flex;flex-direction:column;gap:14px}
+  li{background:var(--card);border:1px solid var(--borde);border-radius:24px;padding:20px}
+  .tags{display:flex;flex-wrap:wrap;gap:8px;font-size:12px;font-weight:700;text-transform:uppercase;letter-spacing:.04em}
+  .tag{background:var(--texto);color:var(--fondo);border-radius:999px;padding:4px 12px}
+  .tag.pronto{background:transparent;border:2px solid var(--rojo);color:var(--rojo);padding:2px 10px}
+  h2{font-size:20px;font-weight:800;line-height:1.3;margin:12px 0 4px;letter-spacing:-.01em}
+  li p{color:var(--gris);font-weight:500}
+  .btn{display:inline-flex;margin-top:16px;background:var(--rojo);color:#fff;text-decoration:none;font-weight:700;border-radius:16px;padding:12px 24px}
+  .btn.off{background:#333;color:#888;pointer-events:none}
+  .cta{margin-top:34px;background:var(--rojo);border-radius:24px;padding:24px;color:#fff}
+  .cta h2{font-size:24px;font-weight:900;margin:0 0 8px}
+  .cta p{font-size:17px;font-weight:500}
+  .cta a{display:inline-flex;margin-top:18px;background:var(--fondo);color:#fff;text-decoration:none;font-weight:700;border-radius:16px;padding:12px 24px}
+  footer{text-align:center;color:#777;font-size:12px;padding:10px 20px 34px;max-width:576px;margin:0 auto}
+</style>
+</head>
+<body>
+<main>
+  <div class="logo">joan garcía <b>coaching</b></div>
+  <p class="eyebrow">Fuerte Sin Estrés</p>
+  <h1>Recursos gratis de Joan García</h1>
+  <p class="sub">Tests y herramientas de 1-2 minutos para saber qué te frena y por dónde empezar.</p>
+  <ul id="lista"></ul>
+  <section class="cta">
+    <h2>¿No sabes por dónde empezar?</h2>
+    <p>Escríbeme <b>CAMBIO10</b> por Instagram y te digo cuál te toca.</p>
+    <a href="https://ig.me/m/joangarciacoaching" target="_blank" rel="noopener">Escribirme por Instagram</a>
+  </section>
+</main>
+<footer>Estos recursos son orientativos y no sustituyen el consejo médico.</footer>
+<script>
+/* Para añadir o activar un recurso: edita esta lista. ready:true lo activa. */
+var RECURSOS = [
+  {t:"Descubre cuántas calorías podrías comer perdiendo grasa", d:"Si tu metabolismo funcionara bien. Descubre si estás en modo ahorro y qué te frena.", tipo:"Calculadora", dur:"2 min", href:"calculadora-metabolismo/", ready:true},
+  {t:"Descubre tu principal limitante para perder grasa", d:"El factor que más te está frenando ahora mismo.", tipo:"Test", dur:"2 min", href:"https://thyroid-habit-compass.lovable.app/", ready:true},
+  {t:"¿Tu barriga es grasa o hinchazón?", d:"Descubre qué hay realmente detrás de tu barriga.", tipo:"Test", dur:"2 min", href:"barriga/", ready:false},
+  {t:"¿Qué está bajando tu testosterona?", d:"Los hábitos que te quitan energía sin que lo notes.", tipo:"Test", dur:"2 min", href:"testosterona/", ready:false},
+  {t:"¿Cuántos días deberías entrenar?", d:"Lo que de verdad encaja con tu semana.", tipo:"Test", dur:"1 min", href:"entreno/", ready:false},
+  {t:"Revisa tu despensa en 2 minutos", d:"Qué tener a mano y qué te está saboteando.", tipo:"Checklist", dur:"2 min", href:"despensa/", ready:false},
+  {t:"Guía del sueño + vídeo", d:"Duerme mejor para tener menos hambre y más energía.", tipo:"Guía", dur:"10 min", href:"#", ready:false},
+  {t:"Cómo Sergi perdió barriga comiendo 500 kcal más", d:"Un caso real de alguien como tú.", tipo:"Caso real", dur:"2 min", href:"caso-sergi/", ready:false}
+];
+var orden = RECURSOS.filter(function(r){return r.ready}).concat(RECURSOS.filter(function(r){return !r.ready}));
+document.getElementById('lista').innerHTML = orden.map(function(r){
+  var ext = /^https?:/.test(r.href) ? ' target="_blank" rel="noopener"' : '';
+  return '<li><div class="tags"><span class="tag">' + r.tipo + ' · ' + r.dur + '</span>' + (r.ready ? '' : '<span class="tag pronto">Próximamente</span>') + '</div>' +
+    '<h2>' + r.t + '</h2><p>' + r.d + '</p>' +
+    (r.ready ? '<a class="btn" href="' + r.href + '"' + ext + '>Abrir →</a>' : '<span class="btn off">Abrir</span>') + '</li>';
+}).join('');
+</script>
+</body>
+</html>
