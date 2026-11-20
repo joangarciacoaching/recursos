@@ -1,0 +1,390 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Calculadora metabólica · Joan García Coaching</title>
+<meta name="description" content="Descubre cuántas calorías podrías comer perdiendo grasa si tu metabolismo funcionara bien.">
+<meta property="og:title" content="¿Cuántas calorías podrías comer perdiendo grasa?">
+<meta property="og:description" content="Calculadora gratuita: descubre si tu metabolismo está en modo ahorro y qué te frena.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
+<style>
+  :root{--rojo:#d70438;--rojo-osc:#a8032c;--fondo:#151515;--card:#1f1f1f;--card2:#2a2a2a;--texto:#f4f4f2;--gris:#a3a3a0;--borde:#333;--verde:#7fb36e}
+  *{box-sizing:border-box;margin:0;padding:0}
+  body{font-family:'Inter',system-ui,-apple-system,sans-serif;background:var(--fondo);color:var(--texto);line-height:1.5;min-height:100vh;background-image:radial-gradient(circle at 85% 0%,rgba(215,4,56,.18),transparent 45%)}
+  .wrap{max-width:576px;margin:0 auto;padding:24px 18px 48px}
+  .top{display:flex;justify-content:space-between;align-items:center;margin-bottom:26px}
+  .logo{font-size:18px;letter-spacing:-.03em;color:var(--rojo)}
+  .logo b{font-weight:800}
+  .top a{color:var(--gris);font-size:13px;font-weight:600;text-decoration:underline}
+  .card{background:var(--card);border:1px solid var(--borde);border-radius:24px;padding:28px 22px}
+  .intro{background:transparent;border:none;padding:6px 2px}
+  .eyebrow{font-size:13px;font-weight:700;letter-spacing:.14em;text-transform:uppercase;color:var(--rojo);margin-bottom:10px}
+  h1{font-size:34px;line-height:1.1;font-weight:900;letter-spacing:-.035em;margin-bottom:14px}
+  h1 span{color:var(--rojo)}
+  h2{font-size:21px;line-height:1.3;font-weight:800;letter-spacing:-.01em;margin-bottom:6px}
+  h3{font-size:17px;font-weight:800;margin-bottom:10px}
+  p.sub{color:var(--gris);font-size:17px;font-weight:500;margin-bottom:22px}
+  .pill{display:inline-block;background:var(--card2);color:var(--texto);font-size:13px;font-weight:600;padding:6px 12px;border-radius:999px;margin:0 6px 8px 0}
+  .btn{display:block;width:100%;border:none;border-radius:16px;padding:17px 18px;font-family:inherit;font-size:17px;font-weight:700;cursor:pointer;transition:transform .1s,background .2s;text-align:center;text-decoration:none}
+  .btn:active{transform:scale(.98)}
+  .btn-rojo{background:var(--rojo);color:#fff;box-shadow:0 10px 30px rgba(215,4,56,.25)}
+  .btn-rojo:hover{background:var(--rojo-osc)}
+  .btn-sec{background:transparent;color:var(--gris);font-weight:600;font-size:15px;padding:12px;margin-top:6px}
+  .progreso{height:6px;background:var(--card2);border-radius:999px;overflow:hidden;margin-bottom:8px}
+  .progreso div{height:100%;background:var(--rojo);width:0;transition:width .35s}
+  .paso{font-size:13px;color:var(--gris);font-weight:600;margin-bottom:18px}
+  .ayuda{color:var(--gris);font-size:14px;margin-bottom:18px}
+  .opciones{display:flex;flex-direction:column;gap:10px;margin-bottom:18px}
+  .opcion{display:flex;align-items:center;gap:12px;width:100%;text-align:left;background:var(--card2);border:2px solid var(--borde);border-radius:14px;padding:15px 16px;font-family:inherit;font-size:16px;font-weight:500;color:var(--texto);cursor:pointer;transition:border-color .15s,background .15s}
+  .opcion:hover{border-color:#555}
+  .opcion.sel{border-color:var(--rojo);background:rgba(215,4,56,.12)}
+  .opcion .check{flex:0 0 22px;height:22px;border-radius:50%;border:2px solid #555;display:flex;align-items:center;justify-content:center;font-size:13px;color:#fff}
+  .opcion.multi .check{border-radius:6px}
+  .opcion.sel .check{background:var(--rojo);border-color:var(--rojo)}
+  .campos{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:18px}
+  .campo label{display:block;font-size:14px;font-weight:600;margin-bottom:6px;color:var(--gris)}
+  .campo input{width:100%;padding:15px 14px;font-family:inherit;font-size:18px;font-weight:700;border:2px solid var(--borde);border-radius:14px;color:var(--texto);background:#111}
+  .campo input:focus{outline:none;border-color:var(--rojo)}
+  .campo.full{grid-column:1/-1}
+  .error{color:#ff4d73;font-size:14px;font-weight:600;margin:-8px 0 14px;min-height:1px}
+  .oculto{display:none}
+  .cargando{text-align:center;padding:40px 10px}
+  .spinner{width:46px;height:46px;border:5px solid var(--card2);border-top-color:var(--rojo);border-radius:50%;margin:0 auto 20px;animation:g .9s linear infinite}
+  @keyframes g{to{transform:rotate(360deg)}}
+  .res-bloque{margin-bottom:28px}
+  .score{display:flex;align-items:center;gap:18px;margin-bottom:12px}
+  .anillo{flex:0 0 104px;height:104px;border-radius:50%;position:relative}
+  .anillo .num{position:absolute;inset:10px;background:var(--card);border-radius:50%;display:flex;flex-direction:column;align-items:center;justify-content:center}
+  .anillo .num b{font-size:30px;font-weight:900;line-height:1}
+  .anillo .num small{font-size:12px;color:var(--gris)}
+  .etiqueta{font-size:12px;font-weight:700;text-transform:uppercase;letter-spacing:.08em}
+  .kcal{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin:14px 0}
+  .kcal div{border-radius:16px;padding:14px;text-align:center;background:var(--card2)}
+  .kcal .pot{background:rgba(127,179,110,.14);border:1px solid rgba(127,179,110,.4)}
+  .kcal small{display:block;font-size:12px;color:var(--gris);font-weight:600;line-height:1.3}
+  .kcal b{display:block;font-size:26px;font-weight:900;margin:4px 0 0}
+  .destacado{background:#111;border-left:4px solid var(--rojo);border-radius:12px;padding:16px;font-size:16px}
+  .destacado b{color:#ff4d73}
+  .errores{list-style:none;display:flex;flex-direction:column;gap:10px}
+  .errores li{background:rgba(215,4,56,.08);border-left:4px solid var(--rojo);border-radius:12px;padding:12px 14px;font-size:15px;color:#d8d8d4}
+  .errores li b{display:block;margin-bottom:2px;color:var(--texto)}
+  .errores li.bien{background:rgba(127,179,110,.1);border-left-color:var(--verde)}
+  .tiempos{display:flex;flex-direction:column;gap:10px}
+  .tiempo{border-radius:16px;padding:16px;display:flex;justify-content:space-between;align-items:center;gap:10px}
+  .tiempo.solo{background:var(--card2)}
+  .tiempo.plan{background:var(--rojo);color:#fff}
+  .tiempo span{font-size:14px;font-weight:600;max-width:58%}
+  .tiempo b{font-size:20px;font-weight:900;text-align:right}
+  .tiempo b small{display:block;font-weight:600;font-size:12px}
+  .fases{display:flex;flex-direction:column;gap:10px;margin-top:14px}
+  .fase{display:flex;gap:12px;align-items:flex-start;font-size:15px;color:#d8d8d4}
+  .fase b{color:var(--texto)}
+  .fase i{flex:0 0 28px;height:28px;border-radius:50%;background:var(--card2);font-style:normal;font-weight:800;display:flex;align-items:center;justify-content:center;font-size:14px;color:var(--rojo)}
+  .cta{background:linear-gradient(160deg,rgba(215,4,56,.18),rgba(215,4,56,.05));border:2px solid var(--rojo);border-radius:20px;padding:22px 18px;text-align:center}
+  .cta p{margin-bottom:14px;font-size:16px}
+  .nota{font-size:12px;color:#777;margin-top:22px;text-align:center}
+  .toast{position:fixed;left:50%;bottom:24px;transform:translateX(-50%);background:#fff;color:#151515;padding:12px 18px;border-radius:12px;font-size:14px;font-weight:700;opacity:0;transition:opacity .3s;pointer-events:none;max-width:90%;text-align:center}
+  .toast.on{opacity:1}
+  @media (max-width:380px){h1{font-size:29px}.kcal b{font-size:22px}}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <div class="top"><div class="logo">joan garcía <b>coaching</b></div><a href="../">Todos los recursos</a></div>
+
+  <section id="intro" class="card intro">
+    <p class="eyebrow">Calculadora gratuita · 2 minutos</p>
+    <h1>Descubre cuántas calorías <span>podrías comer perdiendo grasa</span> si tu metabolismo funcionara bien</h1>
+    <p class="sub">Aunque lleves años comiendo poco y la barriga no se mueva. Sabrás si tu cuerpo está en modo ahorro, qué errores lo mantienen ahí y cuánto tardarías en salir.</p>
+    <div style="margin-bottom:22px"><span class="pill">⏱ 2 minutos</span><span class="pill">📊 Resultado personalizado</span><span class="pill">🔒 Sin registro</span></div>
+    <button class="btn btn-rojo" onclick="empezar()">Calcular mi metabolismo →</button>
+  </section>
+
+  <section id="quiz" class="card oculto">
+    <div class="progreso"><div id="barra"></div></div>
+    <div class="paso" id="paso"></div>
+    <div id="pregunta"></div>
+    <div class="error" id="error"></div>
+    <button class="btn btn-rojo" id="siguiente" onclick="siguiente()">Siguiente</button>
+    <button class="btn btn-sec" id="atras" onclick="atras()">← Atrás</button>
+  </section>
+
+  <section id="cargando" class="card cargando oculto">
+    <div class="spinner"></div>
+    <h2 id="cargaTxt">Analizando tus respuestas…</h2>
+    <p class="sub" style="margin:8px 0 0">Calculando tu gasto real y tu potencial metabólico</p>
+  </section>
+
+  <section id="resultado" class="card oculto"></section>
+
+  <p class="nota">Estimación orientativa basada en fórmulas de gasto energético y en tus respuestas. No es un diagnóstico médico.</p>
+</div>
+<div class="toast" id="toast"></div>
+
+<script>
+/* ============ CONFIGURACIÓN (edita aquí) ============ */
+var INSTAGRAM_USER = 'joangarciacoaching';   // tu usuario de Instagram
+var PALABRA_DM = 'CALCULADORA';              // palabra que te escriben por DM
+/* ==================================================== */
+
+var R = {};
+var i = 0;
+
+var PREGUNTAS = [
+  {id:'sexo', tipo:'una', t:'Para empezar, ¿eres…?', ops:[['h','Hombre'],['m','Mujer']]},
+  {id:'datos', tipo:'datos', t:'Tus datos básicos', ayuda:'Los necesitamos para calcular tu gasto real.'},
+  {id:'trabajo', tipo:'una', t:'¿Cómo es tu día a día de trabajo?', ops:[
+    ['sentado','Sentado casi todo el día (oficina o teletrabajo)'],
+    ['mixto','Sentado, pero me muevo algo durante el día'],
+    ['activo','De pie o con bastante movimiento']]},
+  {id:'pasos', tipo:'una', t:'¿Cuántos pasos das al día, más o menos?', ops:[
+    ['p1','Menos de 4.000'],['p2','Entre 4.000 y 7.000'],['p3','Entre 7.000 y 10.000'],['p4','Más de 10.000'],['p0','Ni idea (me muevo poco)']]},
+  {id:'entreno', tipo:'una', t:'¿Cuántos días entrenas fuerza a la semana?', ops:[
+    ['e0','Ninguno ahora mismo'],['e1','1-2 días'],['e2','3-4 días'],['e3','5 o más días']]},
+  {id:'kcal', tipo:'una', t:'¿Cuántas calorías comes al día, aproximadamente?', ayuda:'Si no lo sabes, no pasa nada: te lo preguntamos de otra forma.', ops:[
+    ['k1','Menos de 1.500 kcal'],['k2','Entre 1.500 y 1.900 kcal'],['k3','Entre 1.900 y 2.300 kcal'],['k4','Entre 2.300 y 2.700 kcal'],['k5','Más de 2.700 kcal'],['k0','No tengo ni idea']]},
+  {id:'comida', tipo:'una', t:'¿Cómo describirías lo que comes normalmente?', soloSi:function(){return R.kcal==='k0';}, ops:[
+    ['c1','Poco: me salto comidas o mis platos son pequeños'],
+    ['c2','Controlado: siempre "a dieta", midiendo lo que como'],
+    ['c3','Normal: como hasta quedarme bien'],
+    ['c4','Bastante: picoteo y como mucho']]},
+  {id:'tiempo', tipo:'una', t:'¿Cuánto tiempo llevas intentando perder grasa?', ops:[
+    ['t1','Menos de 3 meses'],['t2','Entre 3 meses y 1 año'],['t3','Entre 1 y 3 años'],['t4','Más de 3 años (dietas en bucle)']]},
+  {id:'hidratos', tipo:'una', t:'¿Qué haces con los hidratos (arroz, patata, fruta, pan…)?', ops:[
+    ['h1','Los evito todo lo que puedo'],['h2','Como algo, pero con miedo a que me engorden'],['h3','Los como en casi todas las comidas sin problema']]},
+  {id:'proteina', tipo:'una', t:'¿Y con la proteína?', ops:[
+    ['pr1','Muchísima: pollo en todo, batidos, claras…'],['pr2','Suficiente, sin obsesionarme'],['pr3','Poca, no me fijo']]},
+  {id:'practicas', tipo:'multi', t:'¿Haces alguna de estas cosas?', ayuda:'Marca todas las que hagas.', ops:[
+    ['ayuno','Ayuno o me salto el desayuno'],
+    ['cafe','Café en ayunas o varios cafés al día'],
+    ['cardio','Mucho cardio o cardio en ayunas'],
+    ['frio','Duchas frías, baños de hielo o sauna'],
+    ['finde','Muy estricto entre semana y descontrol el finde'],
+    ['ninguna','Ninguna de estas']]},
+  {id:'senales', tipo:'multi', t:'¿Te pasa alguna de estas cosas a menudo?', ayuda:'Marca todas las que te suenen.', ops:[
+    ['fria','Manos o pies fríos, o tienes frío cuando otros no'],
+    ['cansancio','Bajón de energía a media tarde'],
+    ['sueno','Duermes mal o te despiertas de madrugada'],
+    ['dulce','Ansiedad por el dulce por la noche'],
+    ['digestion','Hinchazón o digestiones pesadas'],
+    ['libido','Pocas ganas, poca libido o poca fuerza'],
+    ['foco','Te cuesta concentrarte en el trabajo'],
+    ['ninguna','Ninguna de estas']]},
+  {id:'horas', tipo:'una', t:'¿Cuántas horas duermes de verdad?', ops:[
+    ['s1','Menos de 6'],['s2','Entre 6 y 7'],['s3','Entre 7 y 8'],['s4','Más de 8']]},
+  {id:'estres', tipo:'una', t:'¿Cómo de estresado vas en tu día a día?', ops:[
+    ['x3','Mucho: trabajo, familia, poco tiempo para mí'],['x2','Normal, con picos'],['x1','Poco, voy tranquilo']]},
+  {id:'cuerpo', tipo:'una', t:'Por último: ¿cómo te ves ahora mismo?', ops:[
+    ['b1','Algo de barriga, me falta definir'],
+    ['b2','Barriga marcada y flotadores'],
+    ['b3','Bastante grasa acumulada'],
+    ['b4','Mucha grasa, me cuesta verme']]}
+];
+
+function visibles(){ return PREGUNTAS.filter(function(p){ return !p.soloSi || p.soloSi(); }); }
+function $(id){ return document.getElementById(id); }
+function mostrar(id){ ['intro','quiz','cargando','resultado'].forEach(function(s){ $(s).classList.toggle('oculto', s!==id); }); window.scrollTo({top:0,behavior:'smooth'}); }
+function empezar(){ i=0; mostrar('quiz'); pintar(); }
+
+function pintar(){
+  var lista = visibles(), p = lista[i];
+  $('barra').style.width = (i/lista.length*100)+'%';
+  $('paso').textContent = 'Pregunta ' + (i+1) + ' de ' + lista.length;
+  $('error').textContent = '';
+  $('atras').style.visibility = i===0 ? 'hidden' : 'visible';
+  var h = '<h2>' + p.t + '</h2>' + (p.ayuda ? '<p class="ayuda">' + p.ayuda + '</p>' : '<div style="height:14px"></div>');
+  if(p.tipo==='datos'){
+    var d = R.datos || {};
+    h += '<div class="campos">' +
+      '<div class="campo"><label>Edad</label><input id="edad" type="number" inputmode="numeric" placeholder="35" value="' + (d.edad||'') + '"></div>' +
+      '<div class="campo"><label>Peso (kg)</label><input id="peso" type="number" inputmode="decimal" placeholder="82" value="' + (d.peso||'') + '"></div>' +
+      '<div class="campo full"><label>Altura (cm)</label><input id="altura" type="number" inputmode="numeric" placeholder="178" value="' + (d.altura||'') + '"></div>' +
+      '</div>';
+  } else {
+    var multi = p.tipo==='multi', val = R[p.id] || (multi ? [] : null);
+    h += '<div class="opciones">' + p.ops.map(function(o){
+      var v=o[0], txt=o[1];
+      var sel = multi ? val.indexOf(v)>-1 : val===v;
+      return '<button class="opcion ' + (multi?'multi ':'') + (sel?'sel':'') + '" onclick="elegir(\'' + p.id + '\',\'' + v + '\',' + multi + ')"><span class="check">' + (sel?'✓':'') + '</span>' + txt + '</button>';
+    }).join('') + '</div>';
+  }
+  $('pregunta').innerHTML = h;
+  $('siguiente').textContent = i===lista.length-1 ? 'Ver mi resultado →' : 'Siguiente';
+}
+
+function elegir(id, v, multi){
+  if(multi){
+    var a = R[id] || [];
+    if(v==='ninguna') a = a.indexOf('ninguna')>-1 ? [] : ['ninguna'];
+    else { a = a.filter(function(x){return x!=='ninguna';}); a = a.indexOf(v)>-1 ? a.filter(function(x){return x!==v;}) : a.concat([v]); }
+    R[id] = a; pintar();
+  } else {
+    R[id] = v; pintar();
+    setTimeout(siguiente, 220);
+  }
+}
+
+function siguiente(){
+  var lista = visibles(), p = lista[i];
+  if(p.tipo==='datos'){
+    var edad=+$('edad').value, peso=+$('peso').value, altura=+$('altura').value;
+    if(!(edad>=16&&edad<=90) || !(peso>=35&&peso<=250) || !(altura>=130&&altura<=225)){
+      $('error').textContent='Revisa los datos: edad, peso (kg) y altura (cm).'; return;
+    }
+    R.datos={edad:edad,peso:peso,altura:altura};
+  } else if(p.tipo==='multi'){
+    if(!(R[p.id]&&R[p.id].length)){ $('error').textContent='Marca al menos una opción.'; return; }
+  } else if(!R[p.id]){ $('error').textContent='Elige una opción para seguir.'; return; }
+  if(p.id==='kcal' && R.kcal!=='k0') delete R.comida;
+  var nueva = visibles();
+  if(i < nueva.length-1){ i++; pintar(); } else { calcular(); }
+}
+function atras(){ if(i>0){ i--; pintar(); } }
+
+function redondear50(x){ return Math.round(x/50)*50; }
+function fmt(n){ return n.toLocaleString('es-ES'); }
+
+function calcular(){
+  mostrar('cargando');
+  var textos=['Analizando tus respuestas…','Calculando tu gasto real…','Detectando tus frenos metabólicos…'];
+  var t=0; var iv=setInterval(function(){ t++; if(t<textos.length) $('cargaTxt').textContent=textos[t]; },800);
+  setTimeout(function(){ clearInterval(iv); pintarResultado(analizar()); }, 2500);
+}
+
+function analizar(){
+  var edad=R.datos.edad, peso=R.datos.peso, altura=R.datos.altura;
+  var bmr = 10*peso + 6.25*altura - 5*edad + (R.sexo==='h'?5:-161);
+
+  var f = {sentado:1.2, mixto:1.3, activo:1.45}[R.trabajo];
+  f += {p0:0, p1:0, p2:.05, p3:.1, p4:.15}[R.pasos];
+  f += {e0:0, e1:.05, e2:.1, e3:.13}[R.entreno];
+  var gasto = bmr*f;
+  var potencial = redondear50(gasto*0.85);
+
+  var actual, estimado=false;
+  if(R.kcal!=='k0') actual = {k1:1350,k2:1700,k3:2100,k4:2500,k5:2900}[R.kcal];
+  else { actual = redondear50(bmr*{c1:1.0,c2:1.15,c3:1.4,c4:1.7}[R.comida]); estimado=true; }
+  var diferencia = potencial - actual;
+
+  var practicas = (R.practicas||[]).filter(function(x){return x!=='ninguna';});
+  var senales = (R.senales||[]).filter(function(x){return x!=='ninguna';});
+  var s = 100;
+  if(R.trabajo==='sentado') s-=5;
+  if(R.pasos==='p1'||R.pasos==='p0') s-=5;
+  s -= {e0:8,e1:2,e2:0,e3:4}[R.entreno];
+  s -= {t1:0,t2:4,t3:7,t4:10}[R.tiempo];
+  s -= {h1:12,h2:6,h3:0}[R.hidratos];
+  s -= {pr1:6,pr2:0,pr3:4}[R.proteina];
+  s -= Math.min(practicas.length*4,15);
+  s -= Math.min(senales.length*3,18);
+  s -= {s1:10,s2:5,s3:0,s4:0}[R.horas];
+  s -= {x3:8,x2:4,x1:0}[R.estres];
+  if(diferencia>500) s-=10; else if(diferencia>250) s-=6;
+  s = Math.max(12, Math.min(96, Math.round(s)));
+
+  var nivel, titulo, color;
+  if(s>=75){ nivel=1; titulo='Metabolismo en buena forma'; color='#7fb36e'; }
+  else if(s>=50){ nivel=2; titulo='Metabolismo frenado'; color='#f0a020'; }
+  else if(s>=30){ nivel=3; titulo='Modo ahorro activado'; color='#ff2d5c'; }
+  else { nivel=4; titulo='Modo supervivencia'; color='#d70438'; }
+
+  var E=[];
+  if(diferencia>250) E.push(['Comes por debajo de lo que tu cuerpo necesita','Con tus datos podrías perder grasa comiendo unas ' + fmt(potencial) + ' kcal. Comiendo menos, tu cuerpo baja el gasto para protegerse: por eso cada vez necesitas comer menos para bajar lo mismo.']);
+  if(R.hidratos==='h1') E.push(['Has quitado los hidratos','Son el combustible que tu tiroides necesita para mantener tu metabolismo encendido. Sin ellos, tu cuerpo tira de hormonas del estrés y ahorra energía.']);
+  if(R.hidratos==='h2') E.push(['Comes hidratos con miedo','El problema no son los hidratos, es cuándo y con qué los combinas. Bien colocados, son los que te ayudan a quemar.']);
+  if(R.proteina==='pr1') E.push(['Te pasas con la proteína','Más proteína no es más quema. Llenarte de proteína y quedarte corto de hidratos te deja sin energía y frena tu metabolismo.']);
+  if(R.tiempo==='t3'||R.tiempo==='t4') E.push(['Llevas demasiado tiempo a dieta','Cada dieta que empiezas y dejas enseña a tu cuerpo a gastar menos. Seguir restringiendo ya no funciona: toca primero recuperar el metabolismo.']);
+  if(practicas.indexOf('ayuno')>-1) E.push(['Ayunas o te saltas comidas','Para un cuerpo que ya va justo de energía, el ayuno es un estrés más que sube el cortisol y te mete más en modo ahorro.']);
+  if(practicas.indexOf('cafe')>-1) E.push(['Tiras de café','El café en ayunas te "activa" con adrenalina, no con energía real. Tapa el cansancio, pero no lo arregla.']);
+  if(practicas.indexOf('cardio')>-1) E.push(['Mucho cardio para quemar','El cardio en exceso con poca comida es otro estrés: tu cuerpo compensa gastando menos el resto del día.']);
+  if(practicas.indexOf('frio')>-1) E.push(['Biohacking sin recuperarte','Frío, sauna o hielo suman estrés. Sin comer y descansar suficiente, restan en vez de sumar.']);
+  if(practicas.indexOf('finde')>-1) E.push(['Todo o nada','Estricto entre semana y descontrol el finde: el déficit de la semana se borra en dos días y tu cuerpo vive en montaña rusa.']);
+  if(R.entreno==='e0') E.push(['No entrenas fuerza','Sin músculo que mantener, tu cuerpo no tiene motivo para gastar más. Con 3 entrenos cortos a la semana es suficiente.']);
+  if(R.entreno==='e3' && diferencia>0) E.push(['Entrenas mucho y comes poco','5 o más días con poca comida es más desgaste que estímulo. Entrenar menos y mejor te dejaría quemar más.']);
+  if(R.horas==='s1'||R.horas==='s2') E.push(['Duermes poco','Con menos de 7 horas aumenta el hambre, baja la testosterona y tu cuerpo se agarra a la grasa.']);
+  if(R.trabajo==='sentado' && (R.pasos==='p1'||R.pasos==='p0')) E.push(['Demasiadas horas sentado','Tu gasto diario es bajo por tu trabajo. No necesitas más cardio, pero sí moverte algo más repartido en el día.']);
+  if(senales.length>=3) E.push(['Tu cuerpo te está dando ' + senales.length + ' señales de alarma','Frío, cansancio, mal sueño, ansiedad por el dulce… No son casualidad: son las señales típicas de un metabolismo que está ahorrando energía.']);
+  if(R.estres==='x3') E.push(['Estrés alto todo el día','El estrés sostenido mantiene el cortisol alto y la grasa abdominal es la primera en notarlo.']);
+
+  var grasa = {b1:4,b2:8,b3:13,b4:20}[R.cuerpo];
+  var ritmoSolo = nivel>=3 ? 0.15 : nivel===2 ? 0.22 : 0.3;
+  var reset = nivel>=3 ? 6 : nivel===2 ? 4 : 2;
+  var soloMin = grasa/ritmoSolo/4.3, soloMax = soloMin*1.5;
+  var planMin = Math.max(3,(reset + grasa/0.5)/4.3), planMax = Math.max(planMin+1, planMin*1.25);
+  var solo = soloMax>18 ? 'Más de 18 meses<small>(o estancado)</small>' : Math.round(soloMin) + '-' + Math.round(soloMax) + ' meses';
+  var plan = Math.round(planMin) + '-' + Math.round(planMax) + ' meses';
+
+  return {s:s,nivel:nivel,titulo:titulo,color:color,potencial:potencial,actual:actual,estimado:estimado,diferencia:diferencia,E:E,solo:solo,plan:plan};
+}
+
+function pintarResultado(r){
+  var mensajeKcal;
+  if(r.diferencia>150) mensajeKcal = 'Podrías estar comiendo <b>unas ' + fmt(r.diferencia) + ' kcal más al día</b> y aun así perder grasa. El problema no es que comas demasiado: es que tu cuerpo se ha adaptado a comer poco.';
+  else if(r.diferencia>=-150) mensajeKcal = 'Comes cerca de lo que tu cuerpo necesita para perder grasa. Tu freno no está en la cantidad, sino en <b>qué comes, cuándo y cómo te recuperas</b>.';
+  else mensajeKcal = 'Ahora mismo comes <b>unas ' + fmt(-r.diferencia) + ' kcal por encima</b> de lo que necesitarías para perder grasa. Tu caso no es de modo ahorro: necesitas otra estrategia, más ordenada y sin pasar hambre.';
+
+  var textoNivel = {
+    1:'Tu metabolismo responde bien. No necesitas cambios drásticos, sino pequeños ajustes bien colocados para que la grasa empiece a bajar.',
+    2:'Tu cuerpo ha empezado a ahorrar energía. Si sigues igual, cada vez te costará más perder grasa aunque comas menos.',
+    3:'Tu cuerpo está en modo ahorro: gasta lo mínimo para protegerse. Por eso, aunque comas poco, la barriga no se mueve. Bajar más la comida solo lo empeoraría.',
+    4:'Tu cuerpo está en modo supervivencia. Seguir así no solo frena tu pérdida de grasa: también afecta a tu energía y tu salud. Necesitas ayuda profesional para salir de ahí y, si los síntomas son intensos o duran mucho, consúltalo también con tu médico.'
+  }[r.nivel];
+
+  var errores = r.E.length
+    ? r.E.slice(0,6).map(function(e){ return '<li><b>❌ ' + e[0] + '</b>' + e[1] + '</li>'; }).join('')
+    : '<li class="bien"><b>✅ No vemos errores graves</b>Vas por buen camino; lo que te falta es afinar el plan.</li>';
+
+  var fasesHTML = '<div class="fases">' +
+    '<div class="fase"><i>1</i><div><b>Reset Metabólico.</b> Subimos tu energía, tu descanso y tu foco mientras tu cuerpo sale del modo ahorro, y ya empiezas a perder grasa.</div></div>' +
+    '<div class="fase"><i>2</i><div><b>Aceleración Metabólica.</b> Con el metabolismo encendido, la grasa baja más rápido comiendo más y entrenando menos días.</div></div>' +
+    '<div class="fase"><i>3</i><div><b>Consolidación.</b> Terminas de perder la barriga y aprendes a mantenerlo sin volver a hacer dieta.</div></div>' +
+    '</div>';
+
+  $('resultado').innerHTML =
+    '<div class="res-bloque"><div class="score">' +
+      '<div class="anillo" style="background:conic-gradient(' + r.color + ' ' + (r.s*3.6) + 'deg, #2a2a2a 0)"><div class="num"><b>' + r.s + '</b><small>de 100</small></div></div>' +
+      '<div><div class="etiqueta" style="color:' + r.color + '">Tu puntuación metabólica</div><h2>' + r.titulo + '</h2></div>' +
+    '</div><p>' + textoNivel + '</p></div>' +
+
+    '<div class="res-bloque"><h3>Tus calorías</h3><div class="kcal">' +
+      '<div><small>Lo que comes ahora' + (r.estimado?' (estimado)':'') + '</small><b>' + fmt(r.actual) + '</b><small>kcal/día</small></div>' +
+      '<div class="pot"><small>Lo que podrías comer perdiendo grasa</small><b>' + fmt(r.potencial) + '</b><small>kcal/día</small></div>' +
+    '</div><div class="destacado">' + mensajeKcal + '</div></div>' +
+
+    '<div class="res-bloque"><h3>Lo que te está frenando</h3><ul class="errores">' + errores + '</ul></div>' +
+
+    '<div class="res-bloque"><h3>¿Cuánto tardarías en quitarte la barriga?</h3><div class="tiempos">' +
+      '<div class="tiempo solo"><span>Por tu cuenta, siguiendo como ahora</span><b>' + r.solo + '</b></div>' +
+      '<div class="tiempo plan"><span>Con un plan personalizado por fases</span><b>' + r.plan + '</b></div>' +
+    '</div>' + fasesHTML + '</div>' +
+
+    '<div class="cta"><h3>¿Quieres que revise tu caso personalmente?</h3>' +
+      '<p>Escríbeme <b>' + PALABRA_DM + '</b> por Instagram con tu puntuación y te digo por dónde empezaría yo contigo para salir del modo ahorro.</p>' +
+      '<button class="btn btn-rojo" onclick="contactar()">Quiero que revises mi caso →</button>' +
+      '<button class="btn btn-sec" onclick="copiar()">Copiar mi resultado</button></div>' +
+
+    '<button class="btn btn-sec" style="margin-top:14px" onclick="location.reload()">↺ Repetir la calculadora</button>';
+  window._r = r;
+  mostrar('resultado');
+}
+
+function resumen(){
+  var r = window._r;
+  var frenos = r.E.slice(0,4).map(function(e){return e[0];}).join(', ') || 'ninguno grave';
+  return PALABRA_DM + '\nMi puntuación metabólica: ' + r.s + '/100 (' + r.titulo + ')\nComo ahora: ' + r.actual + ' kcal · Podría comer: ' + r.potencial + ' kcal\nFrenos: ' + frenos;
+}
+function aviso(t){ var el=$('toast'); el.textContent=t; el.classList.add('on'); setTimeout(function(){ el.classList.remove('on'); },2600); }
+function copiar(){
+  try{
+    return navigator.clipboard.writeText(resumen()).then(function(){ aviso('Resultado copiado. Pégalo en el mensaje 👍'); }, function(){ aviso('No se pudo copiar automáticamente'); });
+  }catch(e){ aviso('No se pudo copiar automáticamente'); return Promise.resolve(); }
+}
+function contactar(){
+  copiar(); window.open('https://ig.me/m/' + INSTAGRAM_USER, '_blank');
+}
+</script>
+</body>
+</html>
