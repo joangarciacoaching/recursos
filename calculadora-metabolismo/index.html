@@ -266,7 +266,7 @@ function analizar(){
 
   var actual, estimado=false;
   if(R.kcal!=='k0') actual = {k1:1350,k2:1700,k3:2100,k4:2500,k5:2900}[R.kcal];
-  else { actual = redondear50(bmr*{c1:1.0,c2:1.15,c3:1.4,c4:1.7}[R.comida]); estimado=true; }
+  else { actual = redondear50(bmr*{c1:0.85,c2:0.95,c3:1.25,c4:1.55}[R.comida]); estimado=true; }
   var diferencia = potencial - actual;
 
   var practicas = (R.practicas||[]).filter(function(x){return x!=='ninguna';});
