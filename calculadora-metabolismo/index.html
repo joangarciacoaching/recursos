@@ -93,7 +93,7 @@
 </head>
 <body>
 <div class="wrap">
-  <div class="top"><div class="logo">joan garcía <b>coaching</b></div><a href="../">Todos los recursos</a></div>
+  <div class="top"><div class="logo">joan garcía <b>coaching</b></div></div>
 
   <section id="intro" class="card intro">
     <p class="eyebrow">Calculadora gratuita · 2 minutos</p>
@@ -124,6 +124,7 @@
 </div>
 <div class="toast" id="toast"></div>
 
+<script src="../comun.js"></script>
 <script>
 /* ============ CONFIGURACIÓN (edita aquí) ============ */
 var INSTAGRAM_USER = 'joangarciacoaching';   // tu usuario de Instagram
@@ -240,9 +241,30 @@ function siguiente(){
   } else if(!R[p.id]){ $('error').textContent='Elige una opción para seguir.'; return; }
   if(p.id==='kcal' && R.kcal!=='k0') delete R.comida;
   var nueva = visibles();
-  if(i < nueva.length-1){ i++; pintar(); } else { calcular(); }
+  if(i < nueva.length-1){ i++; pintar(); } else { pedirLead(); }
 }
-function atras(){ if(i>0){ i--; pintar(); } }
+function atras(){ if(LEAD){ LEAD=false; $('siguiente').onclick=siguiente; pintar(); return; } if(i>0){ i--; pintar(); } }
+
+var LEAD=false, lead={};
+function pedirLead(){
+  LEAD=true;
+  $('barra').style.width='94%';
+  $('paso').textContent='Último paso';
+  $('error').textContent='';
+  $('pregunta').innerHTML='<h2>¡Listo! ¿A nombre de quién preparo tu resultado?</h2><p class="ayuda">Si quieres, después te ayudo a interpretarlo por WhatsApp.</p>' +
+    '<div class="campos"><div class="campo full"><label>Tu nombre</label><input id="l_nombre" type="text" autocomplete="given-name" maxlength="100" placeholder="Ej: Carlos" style="font-size:17px"></div>' +
+    '<div class="campo full"><label>Tu WhatsApp o tu usuario de Instagram</label><input id="l_contacto" type="text" autocomplete="tel" maxlength="30" placeholder="Ej: 612 345 678 o @carlos" style="font-size:17px"></div></div>' +
+    '<p class="ayuda" style="font-size:12px">Solo lo uso para enviarte tu resultado y algún consejo. Nada de spam.</p>';
+  $('siguiente').textContent='Ver mi resultado →';
+  $('siguiente').onclick=enviarLead;
+}
+function enviarLead(){
+  var n=($('l_nombre').value||'').trim(), c=($('l_contacto').value||'').trim();
+  if(!n){ $('error').textContent='Dime tu nombre para preparar tu resultado.'; return; }
+  if(c.replace(/[\s@+]/g,'').length<3){ $('error').textContent='Déjame tu WhatsApp o tu Instagram.'; return; }
+  lead={nombre:n, contacto:c};
+  calcular();
+}
 
 function redondear50(x){ return Math.round(x/50)*50; }
 function fmt(n){ return n.toLocaleString('es-ES'); }
@@ -361,15 +383,16 @@ function pintarResultado(r){
       '<div class="tiempo plan"><span>Con un plan personalizado por fases</span><b>' + r.plan + '</b></div>' +
     '</div>' + fasesHTML + '</div>' +
 
-    '<div class="cta"><h3>¿Quieres que revise tu caso personalmente?</h3>' +
-      '<p>Escríbeme <b>' + PALABRA_DM + '</b> por Instagram con tu puntuación y te digo por dónde empezaría yo contigo para salir del modo ahorro.</p>' +
-      '<button class="btn btn-rojo" onclick="contactar()">Quiero que revises mi caso →</button>' +
-      '<button class="btn btn-sec" onclick="copiar()">Copiar mi resultado</button></div>' +
+    JG.cta({palabra: PALABRA_DM,
+      texto: 'Te digo por dónde empezaría yo contigo para salir del modo ahorro y comer más perdiendo grasa.',
+      mensaje: 'Hola Joan, soy ' + lead.nombre + '. He hecho la calculadora metabólica. ' + resumenCorto(r) + ' ¿Me ayudas a interpretarlo?'}) +
 
     '<button class="btn btn-sec" style="margin-top:14px" onclick="location.reload()">↺ Repetir la calculadora</button>';
   window._r = r;
+  JG.guardar({recurso:'calculadora-metabolismo', nombre:lead.nombre, contacto:lead.contacto, resultado:resumenCorto(r), puntuacion:r.s, datos:{respuestas:R, actual:r.actual, potencial:r.potencial, frenos:r.E.map(function(e){return e[0];})}});
   mostrar('resultado');
 }
+function resumenCorto(r){ return 'Puntuación metabólica ' + r.s + '/100 (' + r.titulo + '). Como ' + r.actual + ' kcal y podría comer ' + r.potencial + ' kcal perdiendo grasa.'; }
 
 function resumen(){
   var r = window._r;
