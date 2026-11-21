@@ -1,0 +1,122 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Revisa tu despensa en 2 minutos · Joan García</title>
+<meta name="description" content="Descubre qué hay en tu despensa que te está saboteando y qué te falta para perder barriga comiendo hidratos y sin pasar hambre.">
+<meta property="og:title" content="Revisa tu despensa en 2 minutos">
+<meta property="og:description" content="Checklist gratuito: qué te sabotea y qué te falta para perder barriga sin pasar hambre.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="../comun.css">
+</head>
+<body>
+<div class="wrap">
+  <div class="top"><div class="logo">joan garcía <b>coaching</b></div></div>
+
+  <section id="intro" class="card intro">
+    <p class="eyebrow">Checklist gratuito · 2 minutos</p>
+    <h1>Revisa tu despensa: <span>qué te está saboteando</span> y qué te falta</h1>
+    <p class="sub">Para hombres que pasan el día sentado y quieren perder barriga comiendo hidratos y sin pasar hambre. Marca lo que tienes en casa y te digo qué sacar, por qué cambiarlo y tu lista de la compra base.</p>
+    <div style="margin-bottom:22px"><span class="pill">⏱ 2 minutos</span><span class="pill">🛒 Tu lista de la compra</span><span class="pill">🔁 Qué cambiar por qué</span></div>
+    <button class="btn btn-rojo" onclick="JG.empezar()">Revisar mi despensa →</button>
+  </section>
+
+  <section id="quiz" class="card oculto">
+    <div class="progreso"><div id="barra"></div></div>
+    <div class="paso" id="paso"></div>
+    <div id="pregunta"></div>
+    <div class="error" id="error"></div>
+    <button class="btn btn-rojo" id="siguiente" onclick="JG.siguiente()">Siguiente</button>
+    <button class="btn btn-sec" id="atras" onclick="JG.atras()">← Atrás</button>
+  </section>
+
+  <section id="cargando" class="card cargando oculto">
+    <div class="spinner"></div>
+    <h2 id="cargaTxt">Revisando tu despensa…</h2>
+  </section>
+
+  <section id="resultado" class="card oculto"></section>
+
+  <p class="nota">Recomendaciones generales para personas sanas. Si tienes alergias o una condición médica, adáptalas con un profesional.</p>
+</div>
+
+<script src="../comun.js"></script>
+<script>
+var PALABRA = 'COMIDA';
+/* [id, texto, por qué, cámbialo por] */
+var MALOS = [
+  ['semillas', 'Aceite de girasol, soja o maíz', 'Son aceites muy inestables que se oxidan con facilidad y están en casi todos los procesados.', 'Aceite de oliva virgen extra, mantequilla o aceite de coco.'],
+  ['bolleria', 'Galletas, bollería o cereales de desayuno', 'Azúcar y aceites refinados que no te sacian y te disparan el hambre a media mañana.', 'Fruta con yogur natural entero, tostada con huevos o avena casera.'],
+  ['light', 'Productos light, 0% o "fit"', 'Les quitan la grasa y les meten aditivos. Te quedas con hambre y acabas picando.', 'La versión entera de toda la vida: yogur natural entero, queso de verdad.'],
+  ['barritas', 'Barritas y snacks proteicos', 'Ultraprocesados disfrazados de sanos. Proteína de más y comida de verdad de menos.', 'Fruta, un vaso de leche o un trozo de queso.'],
+  ['refrescos', 'Refrescos, zumos de bote o bebidas energéticas', 'Azúcar líquido o edulcorantes que no te sacian y te tienen tirando de estimulantes.', 'Agua, zumo de naranja natural o agua con un poco de sal y limón.'],
+  ['precocinados', 'Precocinados o platos de bandeja', 'Mucha sal escondida, aceites de semillas y poca comida real.', 'Batch cooking del domingo: arroz, patata y carne o pescado para 3 días.'],
+  ['plastico', 'Táperes de plástico para calentar comida', 'Al calentarse pueden soltar disruptores endocrinos que juegan en contra de tus hormonas.', 'Táperes de vidrio o acero.'],
+  ['sarten', 'Sartenes antiadherentes rayadas', 'El recubrimiento dañado se desprende con el uso.', 'Sartenes de acero inoxidable, hierro o cerámica en buen estado.']
+];
+/* [id, texto, para qué] */
+var BUENOS = [
+  ['fruta', 'Fruta de temporada', 'Hidratos fáciles de digerir y el mejor dulce para la noche.'],
+  ['almidon', 'Arroz, patata o boniato', 'Tu gasolina para entrenar y mantener el metabolismo encendido.'],
+  ['huevos', 'Huevos enteros (mejor camperos)', 'Proteína completa y la grasa que tu cuerpo usa para fabricar hormonas.'],
+  ['carne', 'Carne o pescado fresco', 'La base de tus comidas: proteína de calidad que sacia.'],
+  ['lacteos', 'Lácteos enteros: leche, yogur natural, queso', 'Proteína, calcio y saciedad sin productos light.'],
+  ['grasas', 'Aceite de oliva virgen extra o mantequilla', 'Grasas estables para cocinar.'],
+  ['miel', 'Miel o chocolate negro', 'Para darte un capricho sin tirar de bollería.'],
+  ['sal', 'Sal de calidad y caldo de verdad', 'Hidratación y digestiones más ligeras.']
+];
+
+var PREG = [
+  {id:'malos', tipo:'multi', bloque:'Lo que te puede estar saboteando', t:'¿Cuáles de estos tienes en casa?', ayuda:'Marca todos los que tengas, aunque los uses poco.', ops: MALOS.map(function(m){ return [m[0], m[1]]; }).concat([['ninguna','Ninguno de estos']])},
+  {id:'buenos', tipo:'multi', bloque:'Lo que debería haber', t:'¿Y cuáles de estos tienes siempre a mano?', ayuda:'Marca solo lo que suele haber en tu cocina.', ops: BUENOS.map(function(b){ return [b[0], b[1]]; }).concat([['ninguna','Ninguno de estos']])},
+  {id:'compra', tipo:'una', bloque:'Cómo haces la compra', t:'¿Cómo sueles hacer la compra?', ops:[['lista','Con lista y lo justo para la semana'],['marcha','Sobre la marcha, lo que me apetece'],['pedido','Pido comida o como fuera la mayoría de días']]},
+  {id:'noche', tipo:'una', bloque:'Cómo haces la compra', t:'Por la noche, cuando te entra hambre o ansiedad, ¿qué tienes a mano?', ops:[['dulce','Galletas, chocolate con leche o algo de paquete'],['nada','Nada: aguanto y al final pico lo que pillo'],['fruta','Fruta, yogur o algo de verdad']]}
+];
+
+JG.iniciar({
+  recurso: 'despensa',
+  preguntas: PREG,
+  leadTitulo: '¡Listo! ¿A nombre de quién preparo tu lista?',
+  cargando: ['Revisando tu despensa…', 'Buscando qué te sabotea…', 'Preparando tu lista de la compra…'],
+  calcular: function(R, lead){
+    var malos = (R.malos || []).filter(function(x){ return x !== 'ninguna'; });
+    var buenos = (R.buenos || []).filter(function(x){ return x !== 'ninguna'; });
+    var p = 50 + buenos.length * 6 - malos.length * 7 + (R.compra === 'lista' ? 6 : R.compra === 'pedido' ? -8 : 0) + (R.noche === 'fruta' ? 6 : -4);
+    p = Math.max(5, Math.min(98, Math.round(p)));
+    var titulo, color, texto;
+    if(p >= 75){ titulo = 'Despensa de 10'; color = '#7fb36e'; texto = 'Tu cocina juega a tu favor. Si aun así no pierdes barriga, el problema no está en lo que compras sino en cuánto, cuándo y cómo lo combinas.'; }
+    else if(p >= 50){ titulo = 'Despensa mejorable'; color = '#f0a020'; texto = 'Tienes una buena base, pero hay cosas en casa que te sabotean sin que lo notes y te faltan alimentos clave.'; }
+    else { titulo = 'Tu despensa te está saboteando'; color = '#d70438'; texto = 'Ahora mismo tu cocina te lo pone muy difícil. No es falta de fuerza de voluntad: si lo tienes en casa, te lo acabas comiendo.'; }
+
+    var fuera = MALOS.filter(function(m){ return malos.indexOf(m[0]) > -1; });
+    var faltan = BUENOS.filter(function(b){ return buenos.indexOf(b[0]) === -1; });
+    var fueraHTML = fuera.length
+      ? '<ul class="errores">' + fuera.map(function(m){ return '<li><b>❌ ' + m[1] + '</b>' + m[2] + '<br><span style="color:var(--verde);font-weight:700">Cámbialo por:</span> ' + m[3] + '</li>'; }).join('') + '</ul>'
+      : JG.lista([]);
+    var faltanHTML = faltan.length
+      ? '<ul class="errores">' + faltan.map(function(b){ return '<li class="bien"><b>🛒 ' + b[1] + '</b>' + b[2] + '</li>'; }).join('') + '</ul>'
+      : '<p class="muted">No te falta nada básico. 👏</p>';
+    var extra = [];
+    if(R.compra !== 'lista') extra.push('Haz la compra con lista una vez por semana: lo que no entra en casa, no te lo comes.');
+    if(R.noche !== 'fruta') extra.push('Ten siempre a mano fruta, yogur natural entero o un trozo de queso para la noche: el picoteo de noche casi siempre es hambre de verdad de no haber comido suficiente durante el día.');
+    extra.push('Reparte los hidratos durante el día en vez de evitarlos: llegarás a la noche con menos ansiedad.');
+
+    var resumen = 'Mi despensa: ' + p + '/100 (' + titulo + '). Tengo ' + fuera.length + ' saboteadores y me faltan ' + faltan.length + ' básicos.';
+    var html =
+      '<div class="res-bloque">' + JG.anillo(p, color, titulo, 'La nota de tu despensa') + '<p>' + texto + '</p></div>' +
+      '<div class="res-bloque"><h3>Saca esto de tu despensa</h3>' + fueraHTML + '</div>' +
+      '<div class="res-bloque"><h3>Añade esto a tu lista de la compra</h3>' + faltanHTML + '</div>' +
+      '<div class="res-bloque"><h3>Y además</h3>' + JG.acciones(extra) + '</div>' +
+      '<div class="res-bloque"><div class="destacado">Tener la despensa perfecta no sirve de mucho si comes poco, quitas hidratos o picas por la noche. En mi programa ajustamos <b>cuánto, cuándo y cómo</b> comes para que pierdas barriga comiendo más.</div></div>' +
+      JG.cta({palabra: PALABRA,
+        texto: 'Te digo cómo organizaría tus comidas con lo que tienes en casa para perder barriga sin pasar hambre.',
+        mensaje: 'Hola Joan, soy ' + lead.nombre + '. He revisado mi despensa con tu checklist. ' + resumen + ' ¿Me ayudas a organizar mis comidas?'});
+    return {html: html, resultado: resumen, puntuacion: p, extra: {saboteadores: malos, faltan: faltan.map(function(b){ return b[0]; })}};
+  }
+});
+</script>
+</body>
+</html>
