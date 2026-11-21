@@ -64,11 +64,12 @@
 </head>
 <body>
 <main>
-  <div class="top"><div class="logo">joan garcía <b>coaching</b></div><a href="../">Todos los recursos</a></div>
+  <div class="top"><div class="logo">joan garcía <b>coaching</b></div></div>
   <div id="app"></div>
   <p class="nota">Este test es orientativo y no sustituye a una valoración médica.</p>
 </main>
 <div class="toast" id="toast"></div>
+<script src="../comun.js"></script>
 <script>
 /* ============ CONFIGURACIÓN ============ */
 var INSTAGRAM_USER = 'joangarciacoaching';
@@ -133,6 +134,14 @@ function render(){
       '<h2 style="margin-top:8px">' + q.text + '</h2><div style="margin-top:22px">' +
       opts.map(function(o, v){ return '<button class="op' + (S.answers[i]===v ? ' sel' : '') + '" onclick="elegir(' + i + ',' + v + ')">' + o + '</button>'; }).join('') +
       '</div></div>';
+  } else if(S.step === TOTAL + 1 && !S.enviado){
+    h = '<div class="fade"><button class="back" onclick="go(' + TOTAL + ')">← Atrás</button>' +
+      '<p class="rojo" style="font-size:14px;font-weight:700">Último paso</p><h2 style="margin-top:8px">¿A nombre de quién preparo tu resultado?</h2>' +
+      '<div class="card" style="margin-top:18px"><label style="margin-top:0">Tu nombre</label><div class="medida"><input id="l_nombre" maxlength="100" autocomplete="given-name" placeholder="Ej: Carlos" style="font-size:18px" value="' + JG.esc(S.nombre || '') + '"></div>' +
+      '<label>Tu WhatsApp o tu usuario de Instagram</label><div class="medida"><input id="l_contacto" maxlength="30" autocomplete="tel" placeholder="Ej: 612 345 678 o @carlos" style="font-size:18px" value="' + JG.esc(S.contacto || '') + '"></div>' +
+      '<p class="muted" style="font-size:12px;margin-top:14px">Solo lo uso para enviarte tu resultado y algún consejo. Nada de spam.</p></div>' +
+      '<p id="lerr" class="rojo" style="font-size:14px;font-weight:700;margin-top:12px"></p>' +
+      '<button class="btn primary" style="margin-top:12px" onclick="enviarLead()">Ver mi resultado</button></div>';
   } else {
     h = resultado();
   }
@@ -145,6 +154,16 @@ function medida(v, soloCheck){
   if(!soloCheck){ if(S.step===1) S.morning = v; else { S.night = v; S.nightPending = false; } guardar(); }
   var b = $('sig'); if(b) b.disabled = !ok;
 }
+function enviarLead(){
+  var n = ($('l_nombre').value || '').trim(), c = ($('l_contacto').value || '').trim();
+  if(!n){ $('lerr').textContent = 'Dime tu nombre para preparar tu resultado.'; return; }
+  if(c.replace(/[\s@+]/g, '').length < 3){ $('lerr').textContent = 'Déjame tu WhatsApp o tu Instagram.'; return; }
+  S.nombre = n; S.contacto = c; S.enviado = true;
+  var r = scores();
+  JG.guardar({recurso:'barriga', nombre:n, contacto:c, resultado:resumenCorto(r), puntuacion:null, datos:{respuestas:S.answers, manana:S.morning, noche:S.night, hinchazon:r.h, ahorro:r.a, diferencia:r.diff, perfil:r.profile}});
+  go(TOTAL + 1);
+}
+function resumenCorto(r){ return COPY[r.profile].title + '. Hinchazón ' + r.h + '/6, modo ahorro ' + r.a + '/8' + (r.diff != null ? ', diferencia de cintura ' + r.diff + ' cm' : '') + '.'; }
 function luego(){ S.nightPending = true; S.night = ''; go(3); }
 function elegir(i, v){ S.answers[i] = v; guardar(); render(); setTimeout(function(){ go(S.step+1); }, 200); }
 
@@ -181,11 +200,12 @@ function resultado(){
     '<div class="muted" style="margin-top:22px;font-size:16px;font-weight:500;display:flex;flex-direction:column;gap:12px">' + c.text.map(function(t){ return '<p>' + t + '</p>'; }).join('') + '<p>' + train + '</p></div>' +
     '<h2 style="margin-top:30px;font-size:20px">Por dónde empezar</h2><ol class="acc">' + c.actions.map(function(t, i){ return '<li><i>' + (i+1) + '</i><span>' + t + '</span></li>'; }).join('') + '</ol>' +
     '<div class="cta"><p style="font-size:20px;font-weight:900;line-height:1.3">¿Quieres que lo veamos en tu caso?</p>' +
-    '<p style="margin-top:8px;font-weight:600">Escríbeme <b>' + PALABRA_DM + '</b> por Instagram con tu resultado y te digo por dónde empezar.</p>' +
-    '<button class="btn" onclick="contactar()">Escribir a @' + INSTAGRAM_USER + '</button></div>' +
+    '<p style="margin-top:8px;font-weight:600">Escríbeme y te digo por dónde empezaría yo contigo.</p>' +
+    '<a class="btn" style="background:#25d366;color:#0b2e17" target="_blank" rel="noopener" href="' + JG.urlWhatsApp('Hola Joan, soy ' + (S.nombre || '') + '. He hecho el test de la barriga. ' + resumenCorto(r) + ' ¿Me ayudas a interpretarlo?') + '">Escribirme por WhatsApp →</a>' +
+    '<p style="margin-top:12px;font-size:13px">¿Prefieres Instagram? Escríbeme <b>' + PALABRA_DM + '</b> a <a style="color:#fff" target="_blank" rel="noopener" href="https://ig.me/m/' + INSTAGRAM_USER + '">@' + INSTAGRAM_USER + '</a></p></div>' +
     '<button class="btn ghost" style="margin-top:12px" onclick="reiniciar()">Repetir el test</button></div>';
 }
-function reiniciar(){ S = inicial(); guardar(); render(); window.scrollTo(0,0); }
+function reiniciar(){ var n = S.nombre, c = S.contacto; S = inicial(); S.nombre = n; S.contacto = c; guardar(); render(); window.scrollTo(0,0); }
 function aviso(t){ var el=$('toast'); el.textContent=t; el.classList.add('on'); setTimeout(function(){ el.classList.remove('on'); }, 2600); }
 function contactar(){
   var r = window._r;
