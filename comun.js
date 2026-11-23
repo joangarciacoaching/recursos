@@ -1,146 +1,174 @@
-/* Motor común de los recursos de Joan García · Fuerte Sin Estrés
-   - Guarda cada resultado en la base de datos (para el resumen diario).
-   - Pide nombre y contacto antes de enseñar el resultado.
-   - Botón de WhatsApp con el resultado ya escrito. */
+/* Motor común de los recursos de Joan García · Fuerte Sin Estrés (v2)
+   - Test por páginas (un bloque por página), sin preguntas obligatorias salvo las marcadas.
+   - «No lo sé» cuenta como información: sale en «Tus puntos ciegos».
+   - Contacto opcional. Final con un único botón de WhatsApp con el diagnóstico escrito.
+   - Guarda cada resultado y cada inicio para el resumen diario. */
 var JG = (function(){
   var CONFIG = {
     WHATSAPP: '34624993458',                 // tu número de WhatsApp (con prefijo, sin +)
-    INSTAGRAM: 'joangarciacoaching',         // tu usuario de Instagram
     SUPA_URL: 'https://yrklbjiitlrbapdyvyzc.supabase.co',
-    SUPA_KEY: 'sb_publishable_7jJtQUKGTmTiT2xnNefgJA_LVx8WJ8n' // clave pública (solo permite AÑADIR resultados)
+    SUPA_KEY: 'sb_publishable_7jJtQUKGTmTiT2xnNefgJA_LVx8WJ8n' // clave pública (solo permite AÑADIR datos)
   };
+  var FREQ = [['0','Nunca'],['1','A veces'],['2','Casi siempre'],['3','Siempre']];
+  var NS = 'ns';
 
   function $(id){ return document.getElementById(id); }
   function esc(s){ return String(s == null ? '' : s).replace(/[&<>"]/g, function(c){ return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]; }); }
 
-  /* ---------- Guardar resultado ---------- */
-  function guardar(d){
+  /* ---------- Envío a la base de datos ---------- */
+  function enviar(tabla, cuerpo){
     try{
-      var cuerpo = {
-        recurso: String(d.recurso || '').slice(0,60),
-        nombre: d.nombre ? String(d.nombre).slice(0,100) : null,
-        telefono: d.contacto ? String(d.contacto).slice(0,30) : null,
-        resultado: d.resultado ? String(d.resultado).slice(0,300) : null,
-        puntuacion: (typeof d.puntuacion === 'number' && isFinite(d.puntuacion)) ? Math.round(d.puntuacion) : null,
-        datos: d.datos || {}
-      };
-      return fetch(CONFIG.SUPA_URL + '/rest/v1/recursos_resultados', {
+      return fetch(CONFIG.SUPA_URL + '/rest/v1/' + tabla, {
         method: 'POST', keepalive: true,
         headers: {'apikey': CONFIG.SUPA_KEY, 'Content-Type': 'application/json', 'Prefer': 'return=minimal'},
         body: JSON.stringify(cuerpo)
       }).catch(function(){});
     }catch(e){ return Promise.resolve(); }
   }
-
-  /* ---------- Avisos y WhatsApp ---------- */
-  function aviso(t){
-    var el = $('toast');
-    if(!el){ el = document.createElement('div'); el.id = 'toast'; el.className = 'toast'; document.body.appendChild(el); }
-    el.textContent = t; el.classList.add('on'); setTimeout(function(){ el.classList.remove('on'); }, 2600);
+  function guardar(d){
+    return enviar('recursos_resultados', {
+      recurso: String(d.recurso || '').slice(0,60),
+      nombre: d.nombre ? String(d.nombre).slice(0,100) : null,
+      telefono: d.contacto ? String(d.contacto).slice(0,30) : null,
+      resultado: d.resultado ? String(d.resultado).slice(0,300) : null,
+      puntuacion: (typeof d.puntuacion === 'number' && isFinite(d.puntuacion)) ? Math.round(d.puntuacion) : null,
+      datos: d.datos || {}
+    });
   }
+  function evento(recurso, ev){ return enviar('recursos_eventos', {recurso: recurso, evento: ev}); }
+
   function urlWhatsApp(texto){ return 'https://wa.me/' + CONFIG.WHATSAPP + '?text=' + encodeURIComponent(texto); }
-  function urlInstagram(){ return 'https://ig.me/m/' + CONFIG.INSTAGRAM; }
 
-  /* Bloque final de llamada a la acción */
+  /* Bloque final: un único botón de WhatsApp */
   function cta(o){
-    return '<div class="cta"><h3>' + (o.titulo || '¿Quieres que revise tu caso personalmente?') + '</h3>' +
+    return '<div class="cta"><h3>' + (o.titulo || '¿Quieres que revise tu caso?') + '</h3>' +
       '<p>' + o.texto + '</p>' +
-      '<a class="btn btn-wa" target="_blank" rel="noopener" href="' + urlWhatsApp(o.mensaje) + '">Escribirme por WhatsApp →</a>' +
-      '<small>¿Prefieres Instagram? Escríbeme <b>' + o.palabra + '</b> a <a target="_blank" rel="noopener" href="' + urlInstagram() + '">@' + CONFIG.INSTAGRAM + '</a></small></div>';
+      '<a class="btn btn-wa" target="_blank" rel="noopener" href="' + urlWhatsApp(o.mensaje) + '">Enviarme mi diagnóstico por WhatsApp →</a>' +
+      '<small>Se abre WhatsApp con tu resultado ya escrito. Solo tienes que darle a enviar.</small></div>';
   }
 
-  /* ---------- Motor de tests ---------- */
-  var T = null, R = {}, i = 0, lead = {};
-
-  function visibles(){ return T.preguntas.filter(function(p){ return !p.soloSi || p.soloSi(R); }); }
-  function mostrar(id){ ['intro','quiz','cargando','resultado'].forEach(function(s){ var el = $(s); if(el) el.classList.toggle('oculto', s !== id); }); window.scrollTo({top:0, behavior:'smooth'}); }
+  /* ---------- Motor de tests por páginas ---------- */
+  var T = null, R = {}, pag = 0, lead = {}, empezado = false;
 
   function iniciar(cfg){ T = cfg; }
-  function empezar(){ i = 0; R = {}; mostrar('quiz'); pintar(); }
+  function mostrar(id){ ['intro','quiz','cargando','resultado'].forEach(function(s){ var el = $(s); if(el) el.classList.toggle('oculto', s !== id); }); window.scrollTo({top:0, behavior:'smooth'}); }
+  function empezar(){
+    pag = 0; R = {}; mostrar('quiz'); pintar();
+    if(!empezado){ empezado = true; evento(T.recurso, 'inicio'); }
+  }
+  function totalPags(){ return T.paginas.length + 1; }
+  function visibles(p){ return p.preguntas.filter(function(q){ return !q.soloSi || q.soloSi(R); }); }
+
+  function opcionesHTML(q){
+    var ops = q.tipo === 'freq' ? FREQ : q.ops;
+    if(q.noSe) ops = ops.concat([[NS, q.noSe === true ? 'No lo sé' : q.noSe]]);
+    var multi = q.tipo === 'multi', val = R[q.id] || (multi ? [] : null);
+    return '<div class="opciones' + (q.tipo === 'freq' ? ' grid' : '') + '">' + ops.map(function(o){
+      var sel = multi ? val.indexOf(o[0]) > -1 : val === o[0];
+      return '<button type="button" class="opcion ' + (multi ? 'multi ' : '') + (sel ? 'sel ' : '') + (o[0] === NS ? 'ns' : '') + '" onclick="JG.elegir(\'' + q.id + '\',\'' + o[0] + '\')"><span class="check">' + (sel ? '✓' : '') + '</span>' + o[1] + '</button>';
+    }).join('') + '</div>';
+  }
+  function preguntaHTML(q, n){
+    var h = '<div class="preg" id="q_' + q.id + '"><p class="preg-t"><span class="num">' + n + '</span>' + q.t + (q.obligatoria ? ' <span class="oblig">*</span>' : '') + '</p>' + (q.ayuda ? '<p class="ayuda">' + q.ayuda + '</p>' : '');
+    if(q.tipo === 'datos'){
+      var d = R[q.id] || {};
+      h += '<div class="campos">' + q.campos.map(function(c){
+        return '<div class="campo' + (c.full ? ' full' : '') + '"><label>' + c.label + '</label><input id="c_' + c.id + '" type="number" inputmode="decimal" placeholder="' + (c.ph || '') + '" value="' + (d[c.id] == null ? '' : d[c.id]) + '" oninput="JG.dato(\'' + q.id + '\',\'' + c.id + '\',this.value)"></div>';
+      }).join('') + '</div>';
+      if(q.noSe){ var nsSel = R[q.id + '_ns'] === NS; h += '<button type="button" class="opcion ns' + (nsSel ? ' sel' : '') + '" style="margin-top:-6px" onclick="JG.elegir(\'' + q.id + '_ns\',\'' + NS + '\')"><span class="check">' + (nsSel ? '✓' : '') + '</span>' + (q.noSe === true ? 'No lo sé' : q.noSe) + '</button>'; }
+    } else { h += opcionesHTML(q); }
+    return h + '</div>';
+  }
 
   function pintar(){
-    var lista = visibles(), total = lista.length + 1;
-    $('barra').style.width = (i / total * 100) + '%';
-    $('atras').style.visibility = i === 0 ? 'hidden' : 'visible';
+    var tot = totalPags();
+    $('barra').style.width = ((pag + 1) / tot * 100) + '%';
+    $('atras').style.visibility = pag === 0 ? 'hidden' : 'visible';
     $('error').textContent = '';
-    if(i >= lista.length){ return pintarLead(total); }
-    var p = lista[i];
-    $('paso').textContent = (p.bloque ? p.bloque + ' · ' : '') + 'Pregunta ' + (i + 1) + ' de ' + lista.length;
-    var h = '<h2>' + p.t + '</h2>' + (p.ayuda ? '<p class="ayuda">' + p.ayuda + '</p>' : '<div style="height:14px"></div>');
-    if(p.tipo === 'datos'){
-      var d = R[p.id] || {};
-      h += '<div class="campos">' + p.campos.map(function(c){
-        return '<div class="campo' + (c.full ? ' full' : '') + '"><label>' + c.label + '</label><input id="c_' + c.id + '" type="number" inputmode="decimal" placeholder="' + (c.ph || '') + '" value="' + (d[c.id] == null ? '' : d[c.id]) + '"></div>';
-      }).join('') + '</div>';
-    } else {
-      var multi = p.tipo === 'multi', val = R[p.id] || (multi ? [] : null);
-      h += '<div class="opciones">' + p.ops.map(function(o, k){
-        var sel = multi ? val.indexOf(o[0]) > -1 : val === o[0];
-        return '<button class="opcion ' + (multi ? 'multi ' : '') + (sel ? 'sel' : '') + '" onclick="JG.elegir(' + k + ')"><span class="check">' + (sel ? '✓' : '') + '</span>' + o[1] + '</button>';
-      }).join('') + '</div>';
-    }
-    $('pregunta').innerHTML = h;
-    var sig = $('siguiente'); sig.classList.remove('oculto'); sig.textContent = 'Siguiente';
+    if(pag >= T.paginas.length){ return pintarLead(); }
+    var p = T.paginas[pag];
+    $('paso').textContent = 'Bloque ' + (pag + 1) + ' de ' + tot + ' · menos de 2 minutos';
+    var n = 0;
+    $('pregunta').innerHTML = '<h2>' + p.titulo + '</h2>' + (p.sub ? '<p class="ayuda">' + p.sub + '</p>' : '<p class="ayuda">Contesta lo que sepas. Puedes dejar en blanco lo que no.</p>') +
+      visibles(p).map(function(q){ n++; return preguntaHTML(q, n); }).join('');
+    $('siguiente').textContent = 'Siguiente →';
   }
+  function repintarConScroll(){ var y = window.scrollY; pintar(); window.scrollTo(0, y); }
 
-  function elegir(k){
-    var p = visibles()[i], v = p.ops[k][0];
-    if(p.tipo === 'multi'){
-      var a = R[p.id] || [];
+  function elegir(id, v){
+    var q = buscar(id.replace(/_ns$/, ''));
+    if(/_ns$/.test(id)){ R[id] = R[id] === NS ? undefined : NS; return repintarConScroll(); }
+    if(q && q.tipo === 'multi'){
+      var a = R[id] || [];
       if(v === 'ninguna') a = a.indexOf('ninguna') > -1 ? [] : ['ninguna'];
       else { a = a.filter(function(x){ return x !== 'ninguna'; }); a = a.indexOf(v) > -1 ? a.filter(function(x){ return x !== v; }) : a.concat([v]); }
-      R[p.id] = a; pintar();
-    } else { R[p.id] = v; pintar(); setTimeout(siguiente, 220); }
+      R[id] = a;
+    } else { R[id] = R[id] === v ? undefined : v; }
+    repintarConScroll();
   }
+  function dato(qid, cid, v){ var d = R[qid] || {}; var n = parseFloat(String(v).replace(',', '.')); d[cid] = isNaN(n) ? null : n; R[qid] = d; }
+  function buscar(id){ var r = null; T.paginas.forEach(function(p){ p.preguntas.forEach(function(q){ if(q.id === id) r = q; }); }); return r; }
 
   function siguiente(){
-    var lista = visibles();
-    if(i >= lista.length){ return enviarLead(); }
-    var p = lista[i];
-    if(p.tipo === 'datos'){
-      var d = {}, ok = true;
-      p.campos.forEach(function(c){ var n = parseFloat(String($('c_' + c.id).value).replace(',', '.')); if(!(n >= c.min && n <= c.max)) ok = false; d[c.id] = n; });
-      if(!ok){ $('error').textContent = p.errorTxt || 'Revisa los datos.'; return; }
-      R[p.id] = d;
-    } else if(p.tipo === 'multi'){
-      if(!(R[p.id] && R[p.id].length)){ $('error').textContent = 'Marca al menos una opción.'; return; }
-    } else if(!R[p.id]){ $('error').textContent = 'Elige una opción para seguir.'; return; }
-    i++; pintar();
+    if(pag >= T.paginas.length){ return verResultado(); }
+    var p = T.paginas[pag], falta = null;
+    visibles(p).forEach(function(q){
+      if(!q.obligatoria || falta) return;
+      if(q.tipo === 'datos'){
+        var d = R[q.id] || {};
+        q.campos.forEach(function(c){ var n = d[c.id]; if(!(n >= c.min && n <= c.max)) falta = q; });
+      } else if(!R[q.id]) falta = q;
+    });
+    if(falta){ $('error').textContent = falta.errorTxt || 'Esta pregunta es necesaria para calcular tu resultado.'; var el = $('q_' + falta.id); if(el) el.scrollIntoView({behavior:'smooth', block:'center'}); return; }
+    pag++; pintar(); window.scrollTo({top:0, behavior:'smooth'});
   }
-  function atras(){ if(i > 0){ i--; pintar(); } }
+  function atras(){ if(pag > 0){ pag--; pintar(); window.scrollTo({top:0, behavior:'smooth'}); } }
 
-  function pintarLead(total){
+  function pintarLead(){
     $('paso').textContent = 'Último paso';
-    $('barra').style.width = ((total - 1) / total * 100) + '%';
-    $('pregunta').innerHTML = '<h2>' + (T.leadTitulo || '¡Listo! ¿A nombre de quién preparo tu resultado?') + '</h2>' +
-      '<p class="ayuda">' + (T.leadAyuda || 'Si quieres, después te ayudo a interpretarlo por WhatsApp.') + '</p>' +
-      '<div class="campos"><div class="campo full"><label>Tu nombre</label><input id="l_nombre" type="text" autocomplete="given-name" maxlength="100" placeholder="Ej: Carlos" value="' + esc(lead.nombre || '') + '"></div>' +
-      '<div class="campo full"><label>Tu WhatsApp o tu usuario de Instagram</label><input id="l_contacto" type="text" autocomplete="tel" maxlength="30" placeholder="Ej: 612 345 678 o @carlos" value="' + esc(lead.contacto || '') + '"></div></div>' +
-      '<p class="ayuda" style="font-size:12px">Solo lo uso para enviarte tu resultado y algún consejo. Nada de spam.</p>';
+    $('pregunta').innerHTML = '<h2>Tu resultado está listo</h2>' +
+      '<p class="ayuda">Si quieres, déjame tu nombre y tu WhatsApp o Instagram por si te puedo ayudar a interpretarlo. Es opcional.</p>' +
+      '<div class="campos"><div class="campo full"><label>Tu nombre (opcional)</label><input id="l_nombre" type="text" autocomplete="given-name" maxlength="100" placeholder="Ej: Carlos" value="' + esc(lead.nombre || '') + '"></div>' +
+      '<div class="campo full"><label>Tu WhatsApp o Instagram (opcional)</label><input id="l_contacto" type="text" autocomplete="tel" maxlength="30" placeholder="Ej: 612 345 678 o @carlos" value="' + esc(lead.contacto || '') + '"></div></div>';
     $('siguiente').textContent = 'Ver mi resultado →';
   }
 
-  function enviarLead(){
-    var nombre = ($('l_nombre').value || '').trim(), contacto = ($('l_contacto').value || '').trim();
-    if(!nombre){ $('error').textContent = 'Dime tu nombre para preparar tu resultado.'; return; }
-    if(contacto.replace(/[\s@+]/g, '').length < 3){ $('error').textContent = 'Déjame tu WhatsApp o tu Instagram.'; return; }
-    lead = {nombre: nombre, contacto: contacto};
+  function verResultado(){
+    var nEl = $('l_nombre'), cEl = $('l_contacto');
+    lead = {nombre: nEl ? (nEl.value || '').trim() : '', contacto: cEl ? (cEl.value || '').trim() : ''};
     mostrar('cargando');
     var textos = T.cargando || ['Analizando tus respuestas…', 'Calculando tu resultado…', 'Preparando tu diagnóstico…'];
     var t = 0, iv = setInterval(function(){ t++; if(t < textos.length) $('cargaTxt').textContent = textos[t]; }, 800);
     var res;
-    try { res = T.calcular(R, lead); } catch(e){ console.error(e); res = {html: '<p>Ha habido un error calculando tu resultado. Recarga la página e inténtalo de nuevo.</p>'}; }
-    guardar({recurso: T.recurso, nombre: nombre, contacto: contacto, resultado: res.resultado, puntuacion: res.puntuacion, datos: {respuestas: R, extra: res.extra || null}});
+    try { res = T.calcular(R, lead); } catch(e){ console.error(e); res = {html: '<p>Ha habido un error calculando tu resultado. Recarga la página e inténtalo de nuevo.</p>', resumen: ''}; }
+    var ciegos = puntosCiegos();
+    guardar({recurso: T.recurso, nombre: lead.nombre, contacto: lead.contacto, resultado: res.resumen, puntuacion: res.puntuacion, datos: {respuestas: R, ciegos: ciegos.map(function(c){ return c[0]; }), extra: res.extra || null}});
+    var saludo = lead.nombre ? 'Hola Joan, soy ' + lead.nombre + '. ' : 'Hola Joan. ';
+    var mensaje = saludo + 'He hecho tu ' + T.nombre + '. ' + res.resumen + (ciegos.length ? ' No sé: ' + ciegos.map(function(c){ return c[0].toLowerCase(); }).join(', ') + '.' : '') + ' ¿Me ayudas a interpretarlo?';
+    var html = res.html + (ciegos.length ? bloqueCiegos(ciegos) : '') + cta({texto: T.ctaTexto, mensaje: mensaje});
     setTimeout(function(){
       clearInterval(iv);
-      $('resultado').innerHTML = res.html + '<button class="btn btn-sec" style="margin-top:14px" onclick="location.reload()">↺ Repetir</button>';
+      $('resultado').innerHTML = html + '<button class="btn btn-sec" style="margin-top:14px" onclick="location.reload()">↺ Repetir</button>';
       mostrar('resultado');
-    }, 2400);
+    }, 2200);
   }
 
-  /* Utilidades de resultado */
-  function anillo(valor, color, titulo, etiqueta){
-    return '<div class="score"><div class="anillo" style="background:conic-gradient(' + color + ' ' + (valor * 3.6) + 'deg,#2a2a2a 0)"><div class="num"><b>' + valor + '</b><small>de 100</small></div></div>' +
+  function puntosCiegos(){
+    var out = [];
+    T.paginas.forEach(function(p){ p.preguntas.forEach(function(q){
+      if(q.ciego && (R[q.id] === NS || R[q.id + '_ns'] === NS)) out.push(q.ciego);
+    }); });
+    return out;
+  }
+  function bloqueCiegos(c){
+    return '<div class="res-bloque"><h3>Tus puntos ciegos</h3><p class="muted" style="margin-bottom:12px">Lo que no mides no lo puedes ajustar. Esto es justo lo que trabajo con mis clientes en la Lectura Metabólica.</p>' +
+      '<ul class="errores">' + c.map(function(x){ return '<li class="ciego"><b>👁 ' + x[0] + '</b>' + x[1] + '</li>'; }).join('') + '</ul></div>';
+  }
+
+  /* ---------- Utilidades de resultado ---------- */
+  function val(v){ return v == null || v === NS ? null : parseInt(v, 10); }
+  function anillo(valor, color, titulo, etiqueta, unidad){
+    return '<div class="score"><div class="anillo" style="background:conic-gradient(' + color + ' ' + (Math.min(100, valor) * 3.6) + 'deg,#2a2a2a 0)"><div class="num"><b>' + valor + '</b><small>' + (unidad || 'de 100') + '</small></div></div>' +
       '<div><div class="etiqueta" style="color:' + color + '">' + etiqueta + '</div><h2>' + titulo + '</h2></div></div>';
   }
   function barra(label, pct, nota, color){
@@ -151,18 +179,8 @@ var JG = (function(){
     return '<ul class="errores">' + items.map(function(e){ return '<li><b>❌ ' + e[0] + '</b>' + e[1] + '</li>'; }).join('') + '</ul>';
   }
   function acciones(items){ return '<ol class="acciones">' + items.map(function(t, k){ return '<li><i>' + (k + 1) + '</i><span>' + t + '</span></li>'; }).join('') + '</ol>'; }
-  function tiempos(solo, plan){
-    return '<div class="tiempos"><div class="tiempo solo"><span>Por tu cuenta, siguiendo como ahora</span><b>' + solo + '</b></div>' +
-      '<div class="tiempo plan"><span>Con un plan personalizado por fases</span><b>' + plan + '</b></div></div>';
-  }
-  function fases(){
-    return '<div class="fases">' +
-      '<div class="fase"><i>1</i><div><b>Reset Metabólico.</b> Subimos tu energía, tu descanso y tu foco mientras tu cuerpo sale del modo ahorro, y ya empiezas a perder grasa.</div></div>' +
-      '<div class="fase"><i>2</i><div><b>Aceleración Metabólica.</b> Con el metabolismo encendido, la grasa baja más rápido comiendo más y entrenando menos días.</div></div>' +
-      '<div class="fase"><i>3</i><div><b>Consolidación.</b> Terminas de perder la barriga y aprendes a mantenerlo sin volver a hacer dieta.</div></div></div>';
-  }
-  function meses(a, b){ return Math.round(a) + '-' + Math.round(b) + ' meses'; }
 
-  return {CONFIG: CONFIG, guardar: guardar, aviso: aviso, cta: cta, urlWhatsApp: urlWhatsApp, iniciar: iniciar, empezar: empezar, elegir: elegir, siguiente: siguiente, atras: atras,
-    anillo: anillo, barra: barra, lista: lista, acciones: acciones, tiempos: tiempos, fases: fases, meses: meses, esc: esc};
+  return {CONFIG: CONFIG, FREQ: FREQ, NS: NS, guardar: guardar, evento: evento, cta: cta, urlWhatsApp: urlWhatsApp,
+    iniciar: iniciar, empezar: empezar, elegir: elegir, dato: dato, siguiente: siguiente, atras: atras,
+    val: val, anillo: anillo, barra: barra, lista: lista, acciones: acciones, esc: esc};
 })();
