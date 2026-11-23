@@ -3,217 +3,47 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>¿Tu barriga es grasa o hinchazón? | Test de Joan García</title>
-<meta name="description" content="2 medidas y 8 preguntas. En 2 minutos sabrás qué le pasa a tu barriga y por dónde empezar.">
+<title>¿Tu barriga es grasa o hinchazón? · Test de Joan García</title>
+<meta name="description" content="Test gratuito de 1 minuto: descubre qué hay realmente detrás de tu barriga y por dónde empezar.">
 <meta property="og:title" content="¿Tu barriga es grasa o hinchazón?">
-<meta property="og:description" content="Test de 2 minutos de Joan García · Programa Fuerte Sin Estrés.">
+<meta property="og:description" content="Test gratuito de 1 minuto: descubre qué hay realmente detrás de tu barriga y por dónde empezar.">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
-<style>
-  :root{--rojo:#d70438;--fondo:#151515;--card:#1f1f1f;--card2:#2a2a2a;--texto:#f4f4f2;--gris:#a3a3a0;--borde:#333}
-  *{box-sizing:border-box;margin:0;padding:0}
-  body{font-family:'Inter',system-ui,sans-serif;background:var(--fondo);color:var(--texto);line-height:1.5;min-height:100vh;background-image:radial-gradient(circle at 85% 0%,rgba(215,4,56,.18),transparent 45%)}
-  main{max-width:448px;margin:0 auto;padding:20px 20px 28px;min-height:100vh;display:flex;flex-direction:column}
-  .top{display:flex;justify-content:space-between;align-items:center;margin-bottom:22px}
-  .logo{font-size:18px;letter-spacing:-.03em;color:var(--rojo)} .logo b{font-weight:800}
-  .top a{color:var(--gris);font-size:13px;font-weight:600}
-  #app{flex:1}
-  .eyebrow{font-size:13px;font-weight:700;letter-spacing:.14em;text-transform:uppercase;color:var(--rojo)}
-  h1{font-size:38px;line-height:1.05;font-weight:900;letter-spacing:-.035em;margin:14px 0}
-  h2{font-size:24px;line-height:1.2;font-weight:900;letter-spacing:-.02em}
-  .sub{font-size:18px;color:var(--gris);font-weight:500}
-  .muted{color:var(--gris)}
-  .btn{display:block;width:100%;border:none;border-radius:16px;padding:16px 22px;font-family:inherit;font-size:16px;font-weight:800;cursor:pointer;text-align:center;text-decoration:none;transition:transform .1s}
-  .btn:active{transform:scale(.98)}
-  .btn:disabled{opacity:.4;cursor:not-allowed}
-  .primary{background:var(--rojo);color:#fff}
-  .ghost{background:transparent;color:var(--texto);border:2px solid var(--borde)}
-  .back{background:none;border:none;color:var(--gris);font-family:inherit;font-size:14px;font-weight:600;cursor:pointer;margin-bottom:16px}
-  .card{background:var(--card);border:1px solid var(--borde);border-radius:24px;padding:24px}
-  .prog{margin-bottom:22px}
-  .prog .lab{display:flex;justify-content:space-between;font-size:12px;font-weight:600;color:var(--gris);margin-bottom:8px}
-  .bar{height:8px;background:var(--card2);border-radius:999px;overflow:hidden}
-  .bar div{height:100%;background:var(--rojo);border-radius:999px;transition:width .4s}
-  .rojo{color:var(--rojo)}
-  ul.tips{list-style:none;margin-top:14px;font-size:14px;font-weight:600;display:flex;flex-direction:column;gap:6px}
-  label{display:block;font-size:14px;font-weight:700;margin-top:22px}
-  .medida{display:flex;align-items:center;gap:12px;margin-top:8px}
-  .medida input{width:100%;background:#111;border:2px solid var(--borde);border-radius:16px;padding:14px 16px;font-family:inherit;font-size:24px;font-weight:800;color:var(--texto);outline:none}
-  .medida input:focus{border-color:var(--rojo)}
-  .medida span{font-size:18px;font-weight:700}
-  .op{display:block;width:100%;text-align:left;background:var(--card);border:2px solid var(--borde);color:var(--texto);border-radius:16px;padding:18px 20px;font-family:inherit;font-size:18px;font-weight:700;cursor:pointer;margin-top:12px}
-  .op.sel{background:var(--rojo);border-color:var(--rojo);color:#fff}
-  .barra{margin-top:14px}
-  .barra .l{display:flex;justify-content:space-between;font-size:14px;font-weight:700}
-  .barra .t{height:10px;background:var(--card2);border-radius:999px;overflow:hidden;margin-top:6px}
-  .barra .t div{height:100%;background:var(--rojo);border-radius:999px}
-  .dif{display:flex;justify-content:space-between;align-items:center;border-top:1px solid var(--borde);margin-top:18px;padding-top:16px;font-size:14px;font-weight:700}
-  .link{background:none;border:none;color:var(--rojo);text-decoration:underline;font-family:inherit;font-weight:700;font-size:14px;cursor:pointer}
-  ol.acc{list-style:none;margin-top:14px;display:flex;flex-direction:column;gap:10px}
-  ol.acc li{display:flex;gap:14px;background:var(--card2);border-radius:16px;padding:16px;font-weight:600}
-  ol.acc li i{flex:0 0 32px;height:32px;border-radius:50%;background:var(--rojo);color:#fff;font-style:normal;font-weight:900;display:flex;align-items:center;justify-content:center;font-size:14px}
-  .cta{margin-top:30px;background:var(--rojo);border-radius:24px;padding:24px;color:#fff}
-  .cta .btn{background:var(--fondo);color:#fff;margin-top:18px}
-  .nota{margin-top:28px;text-align:center;font-size:12px;color:#777}
-  .toast{position:fixed;left:50%;bottom:24px;transform:translateX(-50%);background:#fff;color:#151515;padding:12px 18px;border-radius:12px;font-size:14px;font-weight:700;opacity:0;transition:opacity .3s;pointer-events:none}
-  .toast.on{opacity:1}
-  .fade{animation:f .35s ease}
-  @keyframes f{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:none}}
-</style>
+<link rel="stylesheet" href="../comun.css">
 </head>
 <body>
-<main>
+<div class="wrap">
   <div class="top"><div class="logo">joan garcía <b>coaching</b></div></div>
-  <div id="app"></div>
+
+  <section id="intro" class="card intro">
+    <p class="eyebrow">Test gratuito · 1 minuto</p>
+    <h1>¿Tu barriga es <span>grasa o hinchazón</span>?</h1>
+    <p class="sub">No todo lo que ves en el espejo es grasa. En 1 minuto sabrás cuánto de tu barriga es hinchazón, cuánto es un cuerpo en modo ahorro y por dónde empezar. Sin cinta métrica.</p>
+    <div style="margin-bottom:22px"><span class="pill">⏱ 3 bloques · 1 minuto</span><span class="pill">📏 Sin medirte</span><span class="pill">✋ Contesta solo lo que sepas</span></div>
+    <button class="btn btn-rojo" onclick="JG.empezar()">Hacer el test →</button>
+  </section>
+
+  <section id="quiz" class="card oculto">
+    <div class="progreso"><div id="barra"></div></div>
+    <div class="paso" id="paso"></div>
+    <div id="pregunta"></div>
+    <div class="error" id="error"></div>
+    <button class="btn btn-rojo" id="siguiente" onclick="JG.siguiente()">Siguiente →</button>
+    <button class="btn btn-sec" id="atras" onclick="JG.atras()">← Atrás</button>
+  </section>
+
+  <section id="cargando" class="card cargando oculto">
+    <div class="spinner"></div>
+    <h2 id="cargaTxt">Analizando tus respuestas…</h2>
+  </section>
+
+  <section id="resultado" class="card oculto"></section>
+
   <p class="nota">Este test es orientativo y no sustituye a una valoración médica.</p>
-</main>
-<div class="toast" id="toast"></div>
+</div>
+
 <script src="../comun.js"></script>
-<script>
-/* ============ CONFIGURACIÓN ============ */
-var INSTAGRAM_USER = 'joangarciacoaching';
-var PALABRA_DM = 'CAMBIO10';
-/* ======================================= */
-var KEY = 'barriga-test-v1';
-var FREQ = ['Nunca', 'A veces', 'Casi siempre'];
-var QUESTIONS = [
-  {axis:'h', text:'Por la tarde-noche notas la barriga más dura o hinchada que al despertar.'},
-  {axis:'h', text:'Tienes gases, digestiones pesadas o vas irregular al baño.'},
-  {axis:'h', text:'La barriga te cambia mucho de un día a otro según lo que comes o tu estrés.'},
-  {axis:'a', text:'Te levantas cansado aunque duermas 7-8 horas.'},
-  {axis:'a', text:'Tienes las manos o los pies fríos con frecuencia.'},
-  {axis:'a', text:'Llevas meses comiendo poco, haciendo ayunos o quitando hidratos y la barriga no se va.'},
-  {axis:'a', text:'Tienes bajones de energía a media tarde o ansia por dulce por la noche.'},
-  {axis:'f', text:'¿Cuántos días entrenas fuerza a la semana?', options:['0', '1-2', '3 o más']}
-];
-var TOTAL = 2 + QUESTIONS.length;
-function inicial(){ return {step:0, morning:'', night:'', nightPending:false, answers:QUESTIONS.map(function(){return null;})}; }
-var S = inicial();
-try { var raw = localStorage.getItem(KEY); if(raw){ var o = JSON.parse(raw); for(var k in o) S[k]=o[k]; } } catch(e){}
-function guardar(){ try { localStorage.setItem(KEY, JSON.stringify(S)); } catch(e){} }
-function go(step){ S.step = step; guardar(); render(); window.scrollTo(0,0); }
-function $(id){ return document.getElementById(id); }
-function num(v){ var n = parseFloat(String(v).replace(',', '.')); return isNaN(n) ? null : n; }
-
-function waistDiff(m, n){ if(m==null||n==null) return null; return Math.round((n-m)*10)/10; }
-function diffLevel(d){ if(d==null) return null; if(d>=4) return 'clara'; if(d>=2) return 'moderada'; return 'poca'; }
-function getProfile(diff, h, a){ if((diff!=null && diff>=4) || h>=4) return 'A'; if(a>=5) return 'B'; return 'C'; }
-
-function progreso(){
-  var label = S.step<=2 ? 'Bloque 1 · Dos medidas' : 'Bloque 2 · 8 preguntas';
-  return '<div class="prog"><div class="lab"><span>' + label + '</span><span>' + S.step + '/' + TOTAL + '</span></div><div class="bar"><div style="width:' + (S.step/TOTAL*100) + '%"></div></div></div>';
-}
-
-function render(){
-  var app = $('app'), h = '';
-  if(S.step===0){
-    var resume = S.morning !== '';
-    h = '<div class="fade" style="min-height:70vh;display:flex;flex-direction:column;justify-content:center">' +
-      '<p class="eyebrow">Programa Fuerte Sin Estrés</p>' +
-      '<h1>¿Tu barriga es grasa o hinchazón?</h1>' +
-      '<p class="sub">2 medidas y 8 preguntas. En 2 minutos sabrás qué le pasa a tu barriga y por dónde empezar.</p>' +
-      '<button class="btn primary" style="margin-top:36px" onclick="go(1)">' + (resume ? 'Continuar el test' : 'Empezar el test') + '</button>' +
-      '<p class="muted" style="margin-top:22px;font-size:14px;font-weight:600">Joan García · @joangarciacoaching</p></div>';
-  } else if(S.step===1 || S.step===2){
-    var m = S.step===1;
-    var val = m ? S.morning : S.night;
-    h = progreso() + '<div class="fade"><button class="back" onclick="go(' + (S.step-1) + ')">← Atrás</button>' +
-      '<div class="card"><p class="rojo" style="font-size:14px;font-weight:700">Medida ' + S.step + ' de 2</p>' +
-      '<h2 style="margin-top:4px">' + (m ? 'Cintura por la mañana, en ayunas' : 'Cintura por la noche, después de cenar') + '</h2>' +
-      '<p class="muted" style="margin-top:8px;font-weight:500">' + (m ? 'Mídetela nada más levantarte, antes de desayunar.' : 'Mismo sitio, misma cinta. Unos 30-60 min después de cenar.') + '</p>' +
-      '<ul class="tips"><li>· Cinta métrica a la altura del ombligo</li><li>· Sin apretar, que no se hunda en la piel</li><li>· De pie, relajado, sin meter barriga</li></ul>' +
-      '<label>Tu cintura (cm)</label><div class="medida"><input id="med" inputmode="decimal" placeholder="Ej: 92" value="' + val + '" oninput="medida(this.value)"><span>cm</span></div></div>' +
-      '<button class="btn primary" id="sig" style="margin-top:22px" onclick="go(' + (S.step+1) + ')">Siguiente</button>' +
-      (m ? '' : '<button class="btn ghost" style="margin-top:12px" onclick="luego()">Aún no la tengo</button><p class="muted" style="text-align:center;font-size:12px;margin-top:8px">Guardamos tu progreso en este móvil. Sigue con las preguntas y añádela esta noche.</p>') +
-      '</div>';
-  } else if(S.step <= TOTAL){
-    var i = S.step - 3, q = QUESTIONS[i], opts = q.options || FREQ;
-    h = progreso() + '<div class="fade"><button class="back" onclick="go(' + (S.step-1) + ')">← Atrás</button>' +
-      '<p class="rojo" style="font-size:14px;font-weight:700">Pregunta ' + (i+1) + ' de 8</p>' +
-      '<h2 style="margin-top:8px">' + q.text + '</h2><div style="margin-top:22px">' +
-      opts.map(function(o, v){ return '<button class="op' + (S.answers[i]===v ? ' sel' : '') + '" onclick="elegir(' + i + ',' + v + ')">' + o + '</button>'; }).join('') +
-      '</div></div>';
-  } else if(S.step === TOTAL + 1 && !S.enviado){
-    h = '<div class="fade"><button class="back" onclick="go(' + TOTAL + ')">← Atrás</button>' +
-      '<p class="rojo" style="font-size:14px;font-weight:700">Último paso</p><h2 style="margin-top:8px">¿A nombre de quién preparo tu resultado?</h2>' +
-      '<div class="card" style="margin-top:18px"><label style="margin-top:0">Tu nombre</label><div class="medida"><input id="l_nombre" maxlength="100" autocomplete="given-name" placeholder="Ej: Carlos" style="font-size:18px" value="' + JG.esc(S.nombre || '') + '"></div>' +
-      '<label>Tu WhatsApp o tu usuario de Instagram</label><div class="medida"><input id="l_contacto" maxlength="30" autocomplete="tel" placeholder="Ej: 612 345 678 o @carlos" style="font-size:18px" value="' + JG.esc(S.contacto || '') + '"></div>' +
-      '<p class="muted" style="font-size:12px;margin-top:14px">Solo lo uso para enviarte tu resultado y algún consejo. Nada de spam.</p></div>' +
-      '<p id="lerr" class="rojo" style="font-size:14px;font-weight:700;margin-top:12px"></p>' +
-      '<button class="btn primary" style="margin-top:12px" onclick="enviarLead()">Ver mi resultado</button></div>';
-  } else {
-    h = resultado();
-  }
-  app.innerHTML = h;
-  if(S.step===1 || S.step===2) medida($('med').value, true);
-}
-
-function medida(v, soloCheck){
-  var n = num(v), ok = n!=null && n>=50 && n<=200;
-  if(!soloCheck){ if(S.step===1) S.morning = v; else { S.night = v; S.nightPending = false; } guardar(); }
-  var b = $('sig'); if(b) b.disabled = !ok;
-}
-function enviarLead(){
-  var n = ($('l_nombre').value || '').trim(), c = ($('l_contacto').value || '').trim();
-  if(!n){ $('lerr').textContent = 'Dime tu nombre para preparar tu resultado.'; return; }
-  if(c.replace(/[\s@+]/g, '').length < 3){ $('lerr').textContent = 'Déjame tu WhatsApp o tu Instagram.'; return; }
-  S.nombre = n; S.contacto = c; S.enviado = true;
-  var r = scores();
-  JG.guardar({recurso:'barriga', nombre:n, contacto:c, resultado:resumenCorto(r), puntuacion:null, datos:{respuestas:S.answers, manana:S.morning, noche:S.night, hinchazon:r.h, ahorro:r.a, diferencia:r.diff, perfil:r.profile}});
-  go(TOTAL + 1);
-}
-function resumenCorto(r){ return COPY[r.profile].title + '. Hinchazón ' + r.h + '/6, modo ahorro ' + r.a + '/8' + (r.diff != null ? ', diferencia de cintura ' + r.diff + ' cm' : '') + '.'; }
-function luego(){ S.nightPending = true; S.night = ''; go(3); }
-function elegir(i, v){ S.answers[i] = v; guardar(); render(); setTimeout(function(){ go(S.step+1); }, 200); }
-
-var ACTIONS = {
-  h: ['Camina 10-15 minutos después de cada comida. Ayuda a la digestión y baja la hinchazón.',
-      'Reparte la comida y los hidratos durante el día en vez de llegar con hambre y darte el atracón por la noche.',
-      'Revisa qué alimentos te hinchan más: apunta qué comes y cómo está tu barriga por la noche durante una semana.'],
-  a: ['Deja de recortar y empieza a comer suficiente, con hidratos alrededor del entreno.',
-      'Entrena fuerza 3-4 días a la semana, sesiones de menos de una hora.',
-      'Prioriza dormir 7-8 horas. Sin descanso tu cuerpo sigue en modo ahorro.']
-};
-var COPY = {
-  A: {title:'Tu barriga tiene mucho de hinchazón', text:['Buena noticia: parte de lo que ves en el espejo no es grasa, es hinchazón. Viene de cómo digieres, del estrés y de lo que comes (y cuándo).', 'Esto se puede bajar rápido. En pocas semanas puedes notar la barriga más plana sin pasar hambre.'], actions:ACTIONS.h},
-  B: {title:'Tu barriga es grasa y tu cuerpo está en modo ahorro', text:['Llevas tiempo comiendo cada vez menos, y eso le dice a tu cuerpo una cosa: ahorra energía. Por eso vas a medio gas, con frío, cansado y con la barriga ahí.', 'No necesitas recortar más. Necesitas darle a tu cuerpo razones para gastar.'], actions:ACTIONS.a},
-  C: {title:'Tienes un poco de las dos', text:['Parte de tu barriga es hinchazón (digestión, estrés, comida) y parte es grasa que no baja porque tu cuerpo está algo en modo ahorro.', 'La clave es atacar las dos cosas a la vez, sin dietas extremas.'], actions:[ACTIONS.h[0], ACTIONS.h[1], ACTIONS.a[0], ACTIONS.a[1]]}
-};
-function sum(a){ return a.reduce(function(x,y){ return x + (y||0); }, 0); }
-function scores(){
-  var morning = num(S.morning), night = num(S.night), diff = waistDiff(morning, night);
-  var h = sum(S.answers.slice(0,3)), a = sum(S.answers.slice(3,7)), f = S.answers[7] || 0;
-  return {diff:diff, h:h, a:a, f:f, profile:getProfile(diff, h, a)};
-}
-function barra(label, v, max){ return '<div class="barra"><div class="l"><span>' + label + '</span><span>' + v + '/' + max + '</span></div><div class="t"><div style="width:' + Math.min(100, v/max*100) + '%"></div></div></div>'; }
-
-function resultado(){
-  var r = scores(), c = COPY[r.profile], lvl = diffLevel(r.diff);
-  window._r = r;
-  var train = ['Ahora mismo no entrenas fuerza. Empezar con 2-3 días a la semana va a cambiar mucho cómo responde tu cuerpo.',
-    'Ya entrenas fuerza 1-2 días. Subir a 3 días es de lo que más te va a ayudar.',
-    'Ya entrenas fuerza 3 días o más: bien. Ahora el foco está en comer y descansar acorde a ese entreno.'][r.f];
-  var dif = r.diff!=null ? '<span>' + (r.diff>0?'+':'') + r.diff + ' cm · hinchazón ' + lvl + '</span>' : '<button class="link" onclick="go(2)">Añadir medida de noche</button>';
-  return '<div class="fade" style="padding-top:8px"><p class="eyebrow">Tu resultado</p><h1 style="font-size:32px">' + c.title + '</h1>' +
-    '<div class="card">' + barra('Hinchazón', r.h, 6) + barra('Modo ahorro', r.a, 8) + '<div class="dif"><span>Diferencia de cintura</span>' + dif + '</div></div>' +
-    '<div class="muted" style="margin-top:22px;font-size:16px;font-weight:500;display:flex;flex-direction:column;gap:12px">' + c.text.map(function(t){ return '<p>' + t + '</p>'; }).join('') + '<p>' + train + '</p></div>' +
-    '<h2 style="margin-top:30px;font-size:20px">Por dónde empezar</h2><ol class="acc">' + c.actions.map(function(t, i){ return '<li><i>' + (i+1) + '</i><span>' + t + '</span></li>'; }).join('') + '</ol>' +
-    '<div class="cta"><p style="font-size:20px;font-weight:900;line-height:1.3">¿Quieres que lo veamos en tu caso?</p>' +
-    '<p style="margin-top:8px;font-weight:600">Escríbeme y te digo por dónde empezaría yo contigo.</p>' +
-    '<a class="btn" style="background:#25d366;color:#0b2e17" target="_blank" rel="noopener" href="' + JG.urlWhatsApp('Hola Joan, soy ' + (S.nombre || '') + '. He hecho el test de la barriga. ' + resumenCorto(r) + ' ¿Me ayudas a interpretarlo?') + '">Escribirme por WhatsApp →</a>' +
-    '<p style="margin-top:12px;font-size:13px">¿Prefieres Instagram? Escríbeme <b>' + PALABRA_DM + '</b> a <a style="color:#fff" target="_blank" rel="noopener" href="https://ig.me/m/' + INSTAGRAM_USER + '">@' + INSTAGRAM_USER + '</a></p></div>' +
-    '<button class="btn ghost" style="margin-top:12px" onclick="reiniciar()">Repetir el test</button></div>';
-}
-function reiniciar(){ var n = S.nombre, c = S.contacto; S = inicial(); S.nombre = n; S.contacto = c; guardar(); render(); window.scrollTo(0,0); }
-function aviso(t){ var el=$('toast'); el.textContent=t; el.classList.add('on'); setTimeout(function(){ el.classList.remove('on'); }, 2600); }
-function contactar(){
-  var r = window._r;
-  var txt = PALABRA_DM + '\nMi resultado del test de la barriga: ' + COPY[r.profile].title + '\nHinchazón ' + r.h + '/6 · Modo ahorro ' + r.a + '/8' + (r.diff!=null ? ' · Diferencia de cintura ' + r.diff + ' cm' : '');
-  try { navigator.clipboard.writeText(txt).then(function(){ aviso('Resultado copiado. Pégalo en el mensaje 👍'); }, function(){}); } catch(e){}
-  window.open('https://ig.me/m/' + INSTAGRAM_USER, '_blank');
-}
-render();
-</script>
+<script src="test.js"></script>
 </body>
 </html>
