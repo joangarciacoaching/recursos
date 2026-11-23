@@ -4,9 +4,9 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>¿Cuántos días deberías entrenar? · Test de Joan García</title>
-<meta name="description" content="Descubre cuántos días deberías entrenar de verdad y si estás entrenando de más sin darte cuenta.">
+<meta name="description" content="Test gratuito de 1 minuto: descubre cuántos días deberías entrenar y si estás entrenando de más.">
 <meta property="og:title" content="¿Cuántos días deberías entrenar?">
-<meta property="og:description" content="Test gratuito de 1 minuto: descubre si entrenas de más y qué te encaja de verdad.">
+<meta property="og:description" content="Test gratuito de 1 minuto: descubre cuántos días deberías entrenar y si estás entrenando de más.">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
@@ -19,8 +19,8 @@
   <section id="intro" class="card intro">
     <p class="eyebrow">Test gratuito · 1 minuto</p>
     <h1>¿Cuántos días deberías entrenar <span>(y estás entrenando de más)</span>?</h1>
-    <p class="sub">Más días y más horas no es más resultado. Si entrenas mucho y tu físico no cambia, puede que el problema sea justo ese. Descubre cuántos días te encajan de verdad, cuánto deberían durar tus sesiones y qué estás haciendo de más.</p>
-    <div style="margin-bottom:22px"><span class="pill">⏱ 1 minuto</span><span class="pill">📅 Tus días ideales</span><span class="pill">❌ Tus errores</span></div>
+    <p class="sub">Más días y más horas no es más resultado. Si entrenas mucho y tu físico no cambia, puede que el problema sea justo ese. Descubre cuántos días te encajan de verdad y qué estás haciendo de más.</p>
+    <div style="margin-bottom:22px"><span class="pill">⏱ 2 bloques · 1 minuto</span><span class="pill">📅 Tus días ideales</span><span class="pill">❌ Tus errores</span></div>
     <button class="btn btn-rojo" onclick="JG.empezar()">Hacer el test →</button>
   </section>
 
@@ -29,13 +29,13 @@
     <div class="paso" id="paso"></div>
     <div id="pregunta"></div>
     <div class="error" id="error"></div>
-    <button class="btn btn-rojo" id="siguiente" onclick="JG.siguiente()">Siguiente</button>
+    <button class="btn btn-rojo" id="siguiente" onclick="JG.siguiente()">Siguiente →</button>
     <button class="btn btn-sec" id="atras" onclick="JG.atras()">← Atrás</button>
   </section>
 
   <section id="cargando" class="card cargando oculto">
     <div class="spinner"></div>
-    <h2 id="cargaTxt">Analizando tu entreno…</h2>
+    <h2 id="cargaTxt">Analizando tus respuestas…</h2>
   </section>
 
   <section id="resultado" class="card oculto"></section>
@@ -44,90 +44,6 @@
 </div>
 
 <script src="../comun.js"></script>
-<script>
-var PALABRA = 'ENTRENO';
-var PREG = [
-  {id:'objetivo', tipo:'una', bloque:'Tu objetivo', t:'¿Qué quieres conseguir?', ops:[['barriga','Perder barriga y definir'],['musculo','Ganar músculo y verme más fuerte'],['ambos','Las dos cosas: menos barriga y más músculo']]},
-  {id:'dias', tipo:'una', bloque:'Tu entreno ahora', t:'¿Cuántos días entrenas a la semana ahora mismo?', ops:[['0','Ninguno'],['2','1-2 días'],['3','3 días'],['4','4 días'],['5','5 días'],['6','6 o más']]},
-  {id:'duracion', tipo:'una', bloque:'Tu entreno ahora', t:'¿Cuánto dura cada sesión?', soloSi:function(R){ return R.dias !== '0'; }, ops:[['45','Menos de 45 minutos'],['60','45-60 minutos'],['90','60-90 minutos'],['120','Más de hora y media']]},
-  {id:'rutina', tipo:'una', bloque:'Tu entreno ahora', t:'¿Cómo organizas tu rutina?', soloSi:function(R){ return R.dias !== '0'; }, ops:[['weider','Un músculo o dos por día (pecho, espalda, pierna…)'],['global','Cuerpo completo o torso-pierna'],['libre','Sin estructura: lo que me apetece ese día'],['clases','Clases, crossfit o sobre todo cardio']]},
-  {id:'ejercicios', tipo:'una', bloque:'Tu entreno ahora', t:'¿Cuántos ejercicios haces por sesión?', soloSi:function(R){ return R.dias !== '0' && R.rutina !== 'clases'; }, ops:[['4','4 o menos'],['6','5-7'],['9','8-10'],['11','Más de 10']]},
-  {id:'intensidad', tipo:'una', bloque:'Tu entreno ahora', t:'En tus series, ¿llegas cerca del fallo (que no podrías hacer 1-2 repeticiones más)?', soloSi:function(R){ return R.dias !== '0'; }, ops:[['baja','Casi nunca, me quedo lejos'],['media','En algunas series'],['alta','Sí, en casi todas las series efectivas']]},
-  {id:'progreso', tipo:'una', bloque:'Tus resultados', t:'¿Estás progresando?', soloSi:function(R){ return R.dias !== '0'; }, ops:[['sube','Sí, subo pesos o repeticiones'],['estanca','Llevo meses estancado'],['baja','Voy a peor o me noto más débil']]},
-  {id:'recupera', tipo:'una', bloque:'Tu recuperación', t:'¿Cómo te recuperas entre entrenos?', soloSi:function(R){ return R.dias !== '0'; }, ops:[['bien','Bien, llego con ganas'],['regular','Regular, a veces llego cansado'],['mal','Mal: agujetas, cansancio o molestias casi siempre']]},
-  {id:'sueno', tipo:'una', bloque:'Tu recuperación', t:'¿Cuántas horas duermes?', ops:[['s1','Menos de 6'],['s2','Entre 6 y 7'],['s3','7 o más']]},
-  {id:'comida', tipo:'una', bloque:'Tu recuperación', t:'¿Comes suficiente para lo que entrenas?', ops:[['poco','No: dieta estricta, ayunos o pocos hidratos'],['regular','Más o menos'],['bien','Sí, como bien']]},
-  {id:'cardio', tipo:'una', bloque:'Tu recuperación', t:'Además, ¿cuánto cardio haces?', ops:[['mucho','Mucho: casi todos los días o sesiones largas'],['algo','Algo, 1-2 veces por semana'],['nada','Nada o solo caminar']]},
-  {id:'disponible', tipo:'una', bloque:'Tu semana', t:'Siendo realista, ¿cuántos días podrías entrenar sin agobiarte?', ops:[['2','2 días'],['3','3 días'],['4','4 días'],['5','5 o más']]}
-];
-
-JG.iniciar({
-  recurso: 'entreno',
-  preguntas: PREG,
-  leadTitulo: '¡Listo! ¿A nombre de quién preparo tu plan de días?',
-  cargando: ['Analizando tu entreno…', 'Calculando tu recuperación…', 'Eligiendo tus días ideales…'],
-  calcular: function(R, lead){
-    var dias = parseInt(R.dias, 10), dur = parseInt(R.duracion || '0', 10), ej = parseInt(R.ejercicios || '0', 10);
-    var disp = parseInt(R.disponible, 10);
-    var recMala = R.recupera === 'mal' || (R.sueno === 's1') || R.comida === 'poco' || R.cardio === 'mucho';
-    var recBuena = (R.recupera === 'bien' || dias === 0) && R.sueno === 's3' && R.comida !== 'poco' && R.cardio !== 'mucho';
-
-    /* Días recomendados: 3 por defecto; 4 solo si recupera bien y tiene tiempo; 2 si solo puede 2 */
-    var recomendados = disp <= 2 ? 2 : (recBuena && disp >= 4 ? 4 : 3);
-
-    var E = [], efic = 100;
-    if(dias >= 5){ E.push(['Entrenas demasiados días', 'Con ' + (dias >= 6 ? '6 o más' : '5') + ' días no le das tiempo a tu cuerpo a recuperarse. Es en el descanso donde se construye el músculo y se pierde la grasa.']); efic -= dias >= 6 ? 22 : 15; }
-    if(dur >= 90){ E.push(['Sesiones demasiado largas', 'Más de una hora suele significar mucho volumen basura. Lo que cuenta son las series intensas, no las horas en el gimnasio.']); efic -= dur >= 120 ? 15 : 10; }
-    if(ej >= 9){ E.push(['Demasiados ejercicios', 'Con 8 o más ejercicios por sesión es imposible darlo todo en cada uno. Mejor 4-6 bien elegidos y con intensidad.']); efic -= 10; }
-    if(R.rutina === 'weider'){ E.push(['Un músculo al día', 'La rutina de culturista de un músculo por día te obliga a entrenar muchos días para estimular cada músculo una sola vez. Para un físico estético y sin vivir en el gimnasio funciona mejor un enfoque global.']); efic -= 10; }
-    if(R.rutina === 'libre'){ E.push(['Sin estructura', 'Si cada día haces lo que te apetece, no hay progresión. Sin progresión, tu cuerpo no tiene motivo para cambiar.']); efic -= 12; }
-    if(R.rutina === 'clases'){ E.push(['Mucho cansancio, poco estímulo', 'Las clases y el cardio cansan mucho, pero no le dan a tu cuerpo la señal de construir músculo. Te deja agotado y con el mismo físico.']); efic -= 15; }
-    if(R.intensidad === 'baja'){ E.push(['Te quedas lejos del fallo', 'Si terminas las series pudiendo hacer muchas repeticiones más, tu cuerpo no tiene que adaptarse. Pocas series, pero de verdad.']); efic -= 15; }
-    if(R.progreso === 'estanca' || R.progreso === 'baja'){ E.push([R.progreso === 'baja' ? 'Vas a peor' : 'Llevas meses estancado', 'Es la señal más clara de que algo no cuadra: o entrenas de más, o te recuperas de menos, o las dos cosas.']); efic -= R.progreso === 'baja' ? 15 : 10; }
-    if(R.recupera === 'mal'){ E.push(['No te recuperas', 'Agujetas, cansancio y molestias casi siempre: estás entrenando por encima de lo que tu cuerpo puede asimilar.']); efic -= 10; }
-    if(R.cardio === 'mucho'){ E.push(['Demasiado cardio', 'El cardio en exceso compite con tu recuperación y te mete en modo ahorro: tu cuerpo gasta menos el resto del día.']); efic -= 10; }
-    if(R.comida === 'poco'){ E.push(['Entrenas sin gasolina', 'Entrenar fuerte comiendo poco es la receta para estancarte y perder músculo. Tu cuerpo necesita energía para cambiar.']); efic -= 10; }
-    if(R.sueno === 's1'){ E.push(['Duermes muy poco', 'Con menos de 6 horas, por bien que entrenes, tu cuerpo no se recupera.']); efic -= 8; }
-    if(dias === 0){ E.push(['Ahora mismo no entrenas', 'Sin entreno de fuerza tu cuerpo no tiene motivo para mantener ni ganar músculo. Empezar con ' + recomendados + ' días cortos lo cambia todo.']); efic = Math.min(efic, 40); }
-    else if(dias <= 2 && recomendados >= 3 && disp >= 3){ E.push(['Te falta un día', 'Con 1-2 días es difícil estimular todo el cuerpo lo suficiente. Con uno más notarías el cambio.']); efic -= 8; }
-    efic = Math.max(10, Math.min(98, efic));
-
-    var diag, color;
-    if(dias === 0){ diag = 'Toca empezar'; color = '#f0a020'; }
-    else if(dias > recomendados || dur >= 90 || ej >= 9 || R.recupera === 'mal' || R.cardio === 'mucho'){ diag = 'Estás entrenando de más'; color = '#d70438'; }
-    else if(dias < recomendados || R.intensidad === 'baja'){ diag = 'Te falta estímulo'; color = '#f0a020'; }
-    else if(efic >= 75){ diag = 'Tu entreno va bien encaminado'; color = '#7fb36e'; }
-    else { diag = 'Tu entreno se puede optimizar'; color = '#f0a020'; }
-
-    var texto = diag === 'Estás entrenando de más'
-      ? 'Le estás pidiendo a tu cuerpo más de lo que puede recuperar. Por eso, aunque te esfuerces, tu físico no cambia como debería. La buena noticia: vas a conseguir más entrenando menos.'
-      : diag === 'Te falta estímulo' ? 'Entrenas poco o sin la intensidad suficiente para que tu cuerpo tenga que cambiar. No necesitas vivir en el gimnasio, pero sí que cada sesión cuente.'
-      : diag === 'Toca empezar' ? 'Empezar con pocos días bien hechos es mucho mejor que lanzarte a entrenar todos los días y dejarlo en un mes.'
-      : 'Tienes una buena base. Ahora se trata de ajustar los detalles para que cada sesión rinda al máximo.';
-
-    var plan = recomendados === 2 ? '2 días de cuerpo completo' : recomendados === 3 ? '3 días: cuerpo completo o torso / pierna / cuerpo completo' : '4 días: torso / pierna / torso / pierna';
-    var acciones = [
-      '<b>' + plan + '.</b>',
-      'Sesiones de <b>45-60 minutos</b> con <b>4-6 ejercicios</b>: pocos y bien elegidos.',
-      'Pocas series, pero <b>cerca del fallo</b>: que la última repetición cueste de verdad.',
-      'Sube peso o repeticiones cada semana y apúntalo: si no progresas, algo hay que ajustar.'
-    ];
-    if(R.cardio === 'mucho') acciones.push('Cambia el cardio por <b>caminar</b>: 7.000-8.000 pasos al día.');
-
-    var resumen = 'Me salen ' + recomendados + ' días a la semana. Diagnóstico: ' + diag + ' (eficiencia de mi entreno ' + efic + '/100). Ahora entreno ' + (dias === 0 ? '0' : R.dias === '2' ? '1-2' : R.dias === '6' ? '6 o más' : R.dias) + ' días.';
-    var html =
-      '<div class="res-bloque"><div class="score"><div class="anillo" style="background:conic-gradient(' + color + ' 360deg,#2a2a2a 0)"><div class="num"><b>' + recomendados + '</b><small>días/semana</small></div></div>' +
-      '<div><div class="etiqueta" style="color:' + color + '">Tus días ideales</div><h2>' + diag + '</h2></div></div><p>' + texto + '</p></div>' +
-      '<div class="res-bloque"><h3>La eficiencia de tu entreno</h3><div class="barras">' + JG.barra('Resultados por hora de gimnasio', efic, efic + '/100', efic >= 75 ? '#7fb36e' : efic >= 50 ? '#f0a020' : '#d70438') + '</div></div>' +
-      '<div class="res-bloque"><h3>Lo que estás haciendo de más (o de menos)</h3>' + JG.lista(E.slice(0, 6)) + '</div>' +
-      '<div class="res-bloque"><h3>Cómo entrenaría yo en tu caso</h3>' + JG.acciones(acciones) + '</div>' +
-      '<div class="res-bloque"><h3>El entreno es solo una parte</h3><p class="muted">Si entrenas bien pero comes poco, duermes mal o vives estresado, el cuerpo no cambia igual. En mi programa lo trabajamos todo junto, por fases:</p>' + JG.fases() + '</div>' +
-      JG.cta({palabra: PALABRA,
-        texto: 'Te digo cómo repartiría tus ' + recomendados + ' días y qué ejercicios elegiría para tu objetivo.',
-        mensaje: 'Hola Joan, soy ' + lead.nombre + '. He hecho el test de los días de entreno. ' + resumen + ' ¿Cómo lo organizarías tú?'});
-    return {html: html, resultado: resumen, puntuacion: efic, extra: {recomendados: recomendados, diagnostico: diag}};
-  }
-});
-</script>
+<script src="test.js"></script>
 </body>
 </html>
