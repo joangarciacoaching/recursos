@@ -1,8 +1,9 @@
-/* Test: ¿Tu cuerpo está en modo ahorro? (palabra clave ENERGÍA) */
+/* Test: ¿Tu cuerpo está en modo ahorro? (palabra clave ENERGÍA)
+   Cada respuesta vale de 0 (bien) a 3 (te frena). Un área cuenta si tiene al menos 2 respuestas. */
 var AREAS = [
   {id:'nutricion', nombre:'Nutrición'},
   {id:'sueno', nombre:'Sueño y luz solar'},
-  {id:'hormonas', nombre:'Hormonas y testosterona'},
+  {id:'hormonas', nombre:'Señales hormonales'},
   {id:'estres', nombre:'Estrés y estimulantes'},
   {id:'entreno', nombre:'Entreno y movimiento'}
 ];
@@ -11,27 +12,27 @@ function f(id, area, t){ return {id: id, area: area, tipo: 'freq', t: t}; }
 var PAGINAS = [
   {titulo: 'Cómo comes y te mueves', preguntas: [
     f('nut1', 'nutricion', 'Pasas la mayor parte del año a dieta o intentando bajar de peso.'),
-    f('nut2', 'nutricion', 'Quitas o reduces los hidratos (pan, arroz, patata, fruta) para no engordar.'),
-    f('nut3', 'nutricion', 'Haces ayunos o te saltas comidas para comer menos.'),
-    f('ent1', 'entreno', 'Pasas casi todo el día sentado y te mueves poco.'),
-    f('ent2', 'entreno', 'El entreno te deja reventado el resto del día o tu rendimiento lleva tiempo bajando.'),
-    f('ent3', 'entreno', 'Haces mucho cardio o entrenas en ayunas para quemar más.')
+    f('nut2', 'nutricion', 'Quitas o reduces los hidratos (fruta, pan, arroz, patata) para no engordar.'),
+    f('nut3', 'nutricion', 'Haces ayunos o te saltas comidas.'),
+    f('ent1', 'entreno', 'Pasas casi todo el día sentado.'),
+    f('ent2', 'entreno', 'El entreno te deja reventado el resto del día.'),
+    f('ent3', 'entreno', 'Haces cardio para quemar más calorías.')
   ]},
   {titulo: 'Cómo duermes y vives el día', preguntas: [
     {id:'horas', area:'sueno', tipo:'una', t:'¿Cuántas horas duermes de verdad?', ops:[['3','Menos de 6'],['2','Entre 6 y 7'],['0','Entre 7 y 8'],['0b','Más de 8']], noSe: true,
-      ciego: ['Cuánto duermes de verdad', 'Sin saber cuánto descansas, no sabes si tu cuerpo tiene tiempo para recuperarse y fabricar hormonas.']},
-    f('sue2', 'sueno', 'Te acuestas después de las 23:30, normalmente con el móvil en la mano.'),
-    f('sue3', 'sueno', 'Pasas casi todo el día en interiores y apenas ves la luz del sol por la mañana.'),
-    f('est1', 'estres', 'Necesitas café u otros estimulantes para funcionar durante el día.'),
+      ciego: ['Cuánto duermes de verdad', 'Sin saber cuánto descansas, no sabes si tu cuerpo tiene tiempo para recuperarse y fabricar hormonas.', 'cuánto duermo de verdad']},
+    f('sue2', 'sueno', 'Te acuestas después de las 23:30.'),
+    f('sue3', 'sueno', 'Apenas te da la luz del sol por la mañana.'),
+    f('est1', 'estres', 'Necesitas café u otros estimulantes para funcionar.'),
     f('est2', 'estres', 'Pasas el día con prisas, estrés o sin desconectar del trabajo.'),
-    f('est3', 'estres', 'Miras el móvil justo antes de dormir y nada más despertar.')
+    f('est3', 'estres', 'Miras el móvil en la cama, antes de dormir o nada más despertar.')
   ]},
   {titulo: 'Tu energía y tus hormonas', preguntas: [
-    f('hor1', 'hormonas', 'Tienes menos ganas, menos libido o menos empuje que hace unos años.'),
-    f('hor2', 'hormonas', 'Te cuesta ganar fuerza o músculo aunque entrenes.'),
-    f('hor3', 'hormonas', 'Te notas más "blando": grasa en la barriga y el pecho aunque no estés gordo.'),
+    {id:'hor1', area:'hormonas', tipo:'una', t:'Comparado con hace unos años, tus ganas, tu libido y tu empuje están…', ops:[['0','Igual o mejor'],['2','Algo más bajos'],['3','Mucho más bajos']]},
+    {id:'hor2', area:'hormonas', tipo:'una', t:'Cuando entrenas fuerza, ¿cómo vas ganando fuerza y músculo?', ops:[['0','Progreso bien'],['2','Me cuesta, voy muy lento'],['3','Llevo tiempo estancado'],['nf','No entreno fuerza']]},
+    {id:'hor3', area:'hormonas', tipo:'una', t:'¿Te notas más "blando", con grasa en la barriga y el pecho aunque no estés gordo?', ops:[['3','Sí'],['1','Un poco'],['0','No']]},
     {id:'temp', tipo:'una', t:'¿Sabes cuál es tu temperatura al despertar?', ayuda:'Medida con un termómetro, nada más abrir los ojos.', ops:[['baja','Sí, por debajo de 36,5 °C'],['normal','Sí, 36,5 °C o más']], noSe: true,
-      ciego: ['Tu temperatura al despertar', 'Es la señal más clara de cómo funciona tu metabolismo y no la estás mirando.']},
+      ciego: ['Tu temperatura al despertar', 'Es la señal más clara de cómo funciona tu metabolismo y no la estás mirando.', 'mi temperatura al despertar']},
     {id:'senales', tipo:'multi', t:'¿Te pasa alguna de estas cosas a menudo?', ayuda:'Marca todas las que te suenen.', ops:[
       ['fria','Manos o pies fríos, o frío cuando otros están bien'],
       ['cansado','Te levantas cansado aunque duermas'],
@@ -40,24 +41,33 @@ var PAGINAS = [
       ['recupera','Te cuesta recuperarte de los entrenos'],
       ['piel','Piel seca o cambios en el pelo'],
       ['digestion','Estreñimiento o digestiones lentas'],
-      ['dulce','Ansia por el dulce o picoteo por la noche'],
+      ['dulce','Antojo de dulce o picoteo por la noche'],
       ['ninguna','Ninguna de estas']]}
   ]}
 ];
 
+/* Por qué te frena cada área (sin hablar de las demás, para que el resultado sea coherente) */
 var EXPLICA = {
-  nutricion: 'Cuando comes poco durante mucho tiempo, quitas hidratos o ayunas, tu cuerpo entiende que hay escasez: gasta menos, vas a medio gas y la barriga no se mueve. No necesitas recortar más, necesitas darle razones para gastar.',
-  sueno: 'Vivimos desregulados del sol: poca luz por la mañana, pantallas hasta tarde y menos horas de sueño. Sin descanso tu cuerpo no se recupera, la testosterona baja, tienes más hambre y menos energía.',
-  hormonas: 'La testosterona no ha parado de bajar generación tras generación. No solo afecta al músculo: también a tu energía, tus ganas y dónde acumulas la grasa. Y casi siempre es consecuencia de tus hábitos, no de la edad.',
-  estres: 'Vivir con prisas y tirar de café le dice a tu cuerpo que está en alerta permanente. Ese estado te deja a medio gas, sube el cortisol y la grasa abdominal es la primera en notarlo.',
-  entreno: 'Pasar el día sentado y entrenar de forma que te destroza (o reventarte a cardio) hace que tu cuerpo gaste menos el resto del día y se recupere peor. Más no es mejor.'
+  nutricion: 'Cuando comes poco durante mucho tiempo, quitas hidratos o ayunas, tu cuerpo entiende que hay escasez: tira de hormonas del estrés, gasta menos y la barriga no se mueve. No necesitas recortar más: necesitas darle energía para que vuelva a gastar.',
+  sueno: 'Vivimos desregulados del sol: poca luz por la mañana, pantallas hasta tarde y menos horas de sueño. Sin ese descanso tu cuerpo no se recupera: tienes más hambre, menos energía y, con el tiempo, también lo acaban pagando tus hormonas.',
+  hormonas: 'Menos ganas, menos empuje, más grasa en la barriga y el pecho y menos progreso en el gimnasio son señales de que tus hormonas van justas. Casi siempre es consecuencia de cómo vives, no de la edad.',
+  estres: 'Vivir con prisas, tirar de café y no soltar el móvil le dice a tu cuerpo que está en alerta permanente. Vive a base de cortisol y adrenalina, y la grasa de la barriga es la primera en notarlo.',
+  entreno: 'Pasar el día sentado y entrenar de forma que te destroza, o reventarte a cardio para quemar, hace que tu cuerpo gaste menos el resto del día y se recupere peor. Más no es mejor.'
+};
+/* Lo que mejor llevas: frase positiva por área */
+var MEJOR = {
+  nutricion: 'Tu forma de comer no es lo que más te frena: es tu punto fuerte.',
+  sueno: 'Tu descanso es tu punto fuerte: mantenlo mientras corriges lo demás.',
+  hormonas: 'Tus señales hormonales todavía aguantan bien: es el momento de corregir lo demás antes de que se resientan.',
+  estres: 'Llevas bien el estrés: es tu punto fuerte.',
+  entreno: 'Tu forma de entrenar y moverte es tu punto fuerte.'
 };
 var ACCIONES = {
-  nutricion: ['Deja de recortar: 3 comidas completas con hidrato en cada una.', 'Pon la mayor parte de los hidratos alrededor del entreno.', 'Olvídate de los ayunos por ahora.'],
-  sueno: ['Sal a la luz del sol en la primera hora del día, aunque sean 10 minutos.', 'Fija una hora de acostarte y levantarte, también el fin de semana.', 'Fuera pantallas 30-60 minutos antes de dormir.'],
-  hormonas: ['Entrena fuerza 3-4 días con pocos ejercicios y mucha intensidad.', 'Come suficiente: grasa de calidad, hidratos y proteína en cada comida.', 'Duerme 7-8 horas: es cuando más testosterona produces.'],
-  estres: ['Retrasa el primer café al menos 1 hora después de despertarte y nada después de las 14:00.', 'Primeros 20 minutos del día sin móvil.', 'Pausas reales de 5 minutos cada hora de trabajo.'],
-  entreno: ['Muévete 10-15 minutos después de cada comida.', 'Sesiones de fuerza de menos de una hora: calidad antes que cantidad.', 'Deja el cardio en ayunas y come antes de entrenar.']
+  nutricion: ['Fruta madura o miel en cada comida: es la energía más rápida para salir del modo ahorro.', 'Hidrato en cada comida principal (patata, arroz, pan de masa madre), también en la cena.', 'Deja los ayunos por ahora: tu cuerpo necesita sentir que la energía no falta.'],
+  sueno: ['Nada más despertar, 5-10 minutos a la luz del sol, sin gafas.', 'Acuéstate entre las 22:00 y las 23:00, también el fin de semana.', 'Cena con hidratos 2-3 horas antes de dormir y deja las pantallas la última media hora.'],
+  hormonas: ['Entrena fuerza 3-4 días con pocos ejercicios y cada serie con intensidad real.', 'Come suficiente: huevos enteros, carne roja, pescado, lácteos enteros, fruta y miel.', 'Quita los aceites de semillas (girasol, soja, maíz), también los que van dentro de los envasados.'],
+  estres: ['Toma el primer café al menos 1 hora después de despertarte.', 'La primera media hora del día, sin móvil.', 'Ten fruta o miel a mano: con energía disponible tu cuerpo no necesita tirar de cortisol.'],
+  entreno: ['Camina 10-15 minutos después de las comidas y acércate a los 10.000 pasos al día.', 'Entrena fuerza con pocos ejercicios bien hechos en lugar de sesiones eternas.', 'Toma fruta o miel antes y durante el entreno: nada de entrenar en ayunas.']
 };
 
 JG.iniciar({
@@ -65,18 +75,20 @@ JG.iniciar({
   nombre: 'test del modo ahorro',
   paginas: PAGINAS,
   cargando: ['Analizando tus respuestas…', 'Puntuando cada área…', 'Detectando tu principal limitante…'],
-  ctaTexto: 'Mándame tu diagnóstico y te digo cuál sería tu primer paso para salir del modo ahorro.',
   calcular: function(R){
     var pts = AREAS.map(function(a){ return {id: a.id, nombre: a.nombre, s: 0, n: 0}; });
     var porId = {}; pts.forEach(function(p){ porId[p.id] = p; });
     PAGINAS.forEach(function(p){ p.preguntas.forEach(function(q){
       if(!q.area) return;
       var v = R[q.id]; if(v == null || v === JG.NS) return;
-      porId[q.area].s += parseInt(v, 10); porId[q.area].n++;
+      var n = parseInt(v, 10); if(isNaN(n)) return;
+      porId[q.area].s += n; porId[q.area].n++;
     }); });
+    if(R.hor2 === 'nf'){ porId.entreno.s += 2; porId.entreno.n++; }
     pts.forEach(function(p){ p.pct = p.n ? p.s / (p.n * 3) : null; });
     var conDatos = pts.filter(function(p){ return p.n >= 2; });
     var senales = (R.senales || []).filter(function(x){ return x !== 'ninguna'; });
+    if(!conDatos.length && !senales.length && R.temp !== 'baja') return {vacio: true};
     var media = conDatos.length ? conDatos.reduce(function(x, p){ return x + p.pct; }, 0) / conDatos.length : 0.3;
     var nivel = Math.round(media * 60 + Math.min(senales.length, 8) * 5 + (R.temp === 'baja' ? 10 : 0));
     nivel = Math.max(3, Math.min(98, nivel));
@@ -99,15 +111,16 @@ JG.iniciar({
     if(!foco.length && peor) foco = [peor];
     var acc = [];
     foco.forEach(function(p){ acc = acc.concat(ACCIONES[p.id].slice(0, foco.length > 1 ? 2 : 3)); });
-    if(R.temp !== 'baja' && R.temp !== 'normal') acc.push('Mídete la temperatura 3 días seguidos nada más despertar: te dirá mucho de tu metabolismo.');
+    if(R.temp !== 'baja' && R.temp !== 'normal') acc.push('Mírate la temperatura nada más despertar un par de días: te dirá mucho de cómo funciona tu metabolismo.');
 
-    var resumen = 'Mi nivel de modo ahorro: ' + nivel + '% (' + titulo + ').' + (peor ? ' Lo que más me falla: ' + peor.nombre + '.' : '') + (mejor && peor && mejor.id !== peor.id ? ' Lo que mejor llevo: ' + mejor.nombre + '.' : '') + (senales.length ? ' Señales: ' + senales.length + '.' : '');
+    var hayMejor = mejor && peor && mejor.id !== peor.id && mejor.pct < .3;
+    var resumen = 'Mi nivel de modo ahorro: ' + nivel + '% (' + titulo + ').' + (peor ? ' Lo que más me frena: ' + peor.nombre + '.' : '') + (hayMejor ? ' Lo que mejor llevo: ' + mejor.nombre + '.' : '') + (senales.length ? ' Señales: ' + senales.length + '.' : '');
     var html =
       '<div class="res-bloque">' + JG.anillo(nivel, color, titulo, 'Tu nivel de modo ahorro', '%') + '<p>' + texto + '</p></div>' +
       '<div class="res-bloque"><h3>Qué te está frenando, de más a menos</h3><div class="barras">' + barras + '</div>' +
       (peor ? '<div class="destacado" style="margin-top:16px">Tu principal limitante: <b>' + peor.nombre + '</b>.<br>' + EXPLICA[peor.id] + '</div>' : '') +
-      (mejor && peor && mejor.pct < peor.pct ? '<p class="muted" style="margin-top:12px;font-size:15px">Lo que mejor llevas: <b style="color:var(--texto)">' + mejor.nombre + '</b>. Ahí no necesitas cambiar nada ahora.</p>' : '') + '</div>' +
-      (senales.length || R.temp === 'baja' ? '<div class="res-bloque"><h3>Tu cuerpo te está avisando</h3><p class="muted">' + (R.temp === 'baja' ? 'Tu temperatura al despertar está por debajo de 36,5 °C: es una de las señales más claras de un metabolismo que ahorra energía. ' : '') + (senales.length ? 'Además marcas ' + senales.length + (senales.length === 1 ? ' señal' : ' señales') + ' típicas del modo ahorro: frío, cansancio, bajones, ansia por el dulce… No son casualidad.' : '') + '</p></div>' : '') +
+      (hayMejor ? '<p class="muted" style="margin-top:12px;font-size:15px">Lo que mejor llevas: <b style="color:var(--texto)">' + mejor.nombre + '</b>. ' + MEJOR[mejor.id] + '</p>' : '') + '</div>' +
+      (senales.length || R.temp === 'baja' ? '<div class="res-bloque"><h3>Tu cuerpo te está avisando</h3><p class="muted">' + (R.temp === 'baja' ? 'Tu temperatura al despertar está por debajo de 36,5 °C: es una de las señales más claras de un metabolismo que ahorra energía. ' : '') + (senales.length ? (R.temp === 'baja' ? 'Además marcas ' : 'Marcas ') + senales.length + (senales.length === 1 ? ' señal típica' : ' señales típicas') + ' del modo ahorro: frío, cansancio, bajones, antojo de dulce… No son casualidad.' : '') + '</p></div>' : '') +
       '<div class="res-bloque"><h3>Qué hacer</h3>' + JG.acciones(acc) + '</div>';
     return {html: html, resumen: resumen, puntuacion: nivel, extra: {areas: pts, senales: senales, temp: R.temp || null}};
   }
