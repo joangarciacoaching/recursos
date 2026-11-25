@@ -1,7 +1,7 @@
 /* Motor común de los recursos de Joan García · Fuerte Sin Estrés (v2)
    - Test por páginas (un bloque por página), sin preguntas obligatorias salvo las marcadas.
    - «No lo sé» cuenta como información: sale en «Tus puntos ciegos».
-   - Contacto opcional. Final con un único botón de WhatsApp con el diagnóstico escrito.
+   - Sin pedir datos de contacto: pantalla «Tu resultado está listo» y un único botón de WhatsApp con el diagnóstico escrito.
    - Guarda cada resultado y cada inicio para el resumen diario. */
 var JG = (function(){
   var CONFIG = {
@@ -41,14 +41,14 @@ var JG = (function(){
 
   /* Bloque final: un único botón de WhatsApp */
   function cta(o){
-    return '<div class="cta"><h3>' + (o.titulo || '¿Quieres que revise tu caso?') + '</h3>' +
-      '<p>' + o.texto + '</p>' +
+    return '<div class="cta"><h3>¿Quieres que revise tu caso?</h3>' +
+      '<p>Mándame tu resultado y te digo cómo empezaría.</p>' +
       '<a class="btn btn-wa" target="_blank" rel="noopener" href="' + urlWhatsApp(o.mensaje) + '">Enviarme mi diagnóstico por WhatsApp →</a>' +
       '<small>Se abre WhatsApp con tu resultado ya escrito. Solo tienes que darle a enviar.</small></div>';
   }
 
   /* ---------- Motor de tests por páginas ---------- */
-  var T = null, R = {}, pag = 0, lead = {}, empezado = false;
+  var T = null, R = {}, pag = 0, empezado = false;
 
   function iniciar(cfg){ T = cfg; }
   function mostrar(id){ ['intro','quiz','cargando','resultado'].forEach(function(s){ var el = $(s); if(el) el.classList.toggle('oculto', s !== id); }); window.scrollTo({top:0, behavior:'smooth'}); }
@@ -87,7 +87,7 @@ var JG = (function(){
     $('error').textContent = '';
     if(pag >= T.paginas.length){ return pintarLead(); }
     var p = T.paginas[pag];
-    $('paso').textContent = 'Bloque ' + (pag + 1) + ' de ' + tot + ' · menos de 2 minutos';
+    $('paso').textContent = 'Bloque ' + (pag + 1) + ' de ' + T.paginas.length + ' · menos de 2 minutos';
     var n = 0;
     $('pregunta').innerHTML = '<h2>' + p.titulo + '</h2>' + (p.sub ? '<p class="ayuda">' + p.sub + '</p>' : '<p class="ayuda">Contesta lo que sepas. Puedes dejar en blanco lo que no.</p>') +
       visibles(p).map(function(q){ n++; return preguntaHTML(q, n); }).join('');
@@ -125,27 +125,28 @@ var JG = (function(){
   function atras(){ if(pag > 0){ pag--; pintar(); window.scrollTo({top:0, behavior:'smooth'}); } }
 
   function pintarLead(){
-    $('paso').textContent = 'Último paso';
-    $('pregunta').innerHTML = '<h2>Tu resultado está listo</h2>' +
-      '<p class="ayuda">Si quieres, déjame tu nombre y tu WhatsApp o Instagram por si te puedo ayudar a interpretarlo. Es opcional.</p>' +
-      '<div class="campos"><div class="campo full"><label>Tu nombre (opcional)</label><input id="l_nombre" type="text" autocomplete="given-name" maxlength="100" placeholder="Ej: Carlos" value="' + esc(lead.nombre || '') + '"></div>' +
-      '<div class="campo full"><label>Tu WhatsApp o Instagram (opcional)</label><input id="l_contacto" type="text" autocomplete="tel" maxlength="30" placeholder="Ej: 612 345 678 o @carlos" value="' + esc(lead.contacto || '') + '"></div></div>';
+    $('paso').textContent = 'Listo';
+    $('barra').style.width = '100%';
+    $('pregunta').innerHTML = '<div class="listo"><div class="listo-ico">✓</div><h2>Tu resultado está listo</h2></div>';
     $('siguiente').textContent = 'Ver mi resultado →';
   }
 
   function verResultado(){
-    var nEl = $('l_nombre'), cEl = $('l_contacto');
-    lead = {nombre: nEl ? (nEl.value || '').trim() : '', contacto: cEl ? (cEl.value || '').trim() : ''};
     mostrar('cargando');
     var textos = T.cargando || ['Analizando tus respuestas…', 'Calculando tu resultado…', 'Preparando tu diagnóstico…'];
     var t = 0, iv = setInterval(function(){ t++; if(t < textos.length) $('cargaTxt').textContent = textos[t]; }, 800);
     var res;
-    try { res = T.calcular(R, lead); } catch(e){ console.error(e); res = {html: '<p>Ha habido un error calculando tu resultado. Recarga la página e inténtalo de nuevo.</p>', resumen: ''}; }
+    try { res = T.calcular(R); } catch(e){ console.error(e); res = {html: '<p>Ha habido un error calculando tu resultado. Recarga la página e inténtalo de nuevo.</p>', resumen: ''}; }
+    if(res.vacio){
+      setTimeout(function(){ clearInterval(iv);
+        $('resultado').innerHTML = '<div class="res-bloque"><h2>Necesito un poco más de información</h2><p>Has dejado casi todas las preguntas sin contestar, así que no puedo darte un diagnóstico fiable. Contesta las que sepas (no hace falta todas) y lo tendrás en un minuto.</p></div><button class="btn btn-rojo" onclick="location.reload()">Volver a empezar →</button>';
+        mostrar('resultado'); }, 1200);
+      return;
+    }
     var ciegos = puntosCiegos();
-    guardar({recurso: T.recurso, nombre: lead.nombre, contacto: lead.contacto, resultado: res.resumen, puntuacion: res.puntuacion, datos: {respuestas: R, ciegos: ciegos.map(function(c){ return c[0]; }), extra: res.extra || null}});
-    var saludo = lead.nombre ? 'Hola Joan, soy ' + lead.nombre + '. ' : 'Hola Joan. ';
-    var mensaje = saludo + 'He hecho tu ' + T.nombre + '. ' + res.resumen + (ciegos.length ? ' No sé: ' + ciegos.map(function(c){ return c[0].toLowerCase(); }).join(', ') + '.' : '') + ' ¿Me ayudas a interpretarlo?';
-    var html = res.html + (ciegos.length ? bloqueCiegos(ciegos) : '') + cta({texto: T.ctaTexto, mensaje: mensaje});
+    guardar({recurso: T.recurso, resultado: res.resumen, puntuacion: res.puntuacion, datos: {respuestas: R, ciegos: ciegos.map(function(c){ return c[0]; }), extra: res.extra || null}});
+    var mensaje = 'Hola Joan. He hecho tu ' + T.nombre + '. ' + res.resumen + (ciegos.length ? ' No sé: ' + ciegos.map(function(c){ return c[2] || c[0].toLowerCase(); }).join(', ') + '.' : '') + ' ¿Cómo empezarías en mi caso?';
+    var html = res.html + (ciegos.length ? bloqueCiegos(ciegos) : '') + cta({mensaje: mensaje});
     setTimeout(function(){
       clearInterval(iv);
       $('resultado').innerHTML = html + '<button class="btn btn-sec" style="margin-top:14px" onclick="location.reload()">↺ Repetir</button>';
@@ -161,7 +162,7 @@ var JG = (function(){
     return out;
   }
   function bloqueCiegos(c){
-    return '<div class="res-bloque"><h3>Tus puntos ciegos</h3><p class="muted" style="margin-bottom:12px">Lo que no mides no lo puedes ajustar. Esto es justo lo que trabajo con mis clientes en la Lectura Metabólica.</p>' +
+    return '<div class="res-bloque"><h3>Tus puntos ciegos</h3><p class="muted" style="margin-bottom:12px">Lo que no conoces de tu cuerpo no lo puedes ajustar. Esto es justo lo que trabajo con mis clientes en la Lectura Metabólica.</p>' +
       '<ul class="errores">' + c.map(function(x){ return '<li class="ciego"><b>👁 ' + x[0] + '</b>' + x[1] + '</li>'; }).join('') + '</ul></div>';
   }
 

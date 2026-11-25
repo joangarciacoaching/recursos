@@ -29,6 +29,7 @@
   li p{color:var(--gris);font-weight:500}
   .btn{display:inline-flex;margin-top:16px;background:var(--rojo);color:#fff;text-decoration:none;font-weight:700;border-radius:16px;padding:12px 24px}
   .btn.off{background:#333;color:#888;pointer-events:none}
+  li.bloq{opacity:.85;border-style:dashed}
   .cta{margin-top:34px;background:var(--rojo);border-radius:24px;padding:24px;color:#fff}
   .cta h2{font-size:24px;font-weight:900;margin:0 0 8px}
   .cta p{font-size:17px;font-weight:500}
@@ -63,11 +64,15 @@ var RECURSOS = [
   {t:"Filtro de supermercado", d:"Busca productos de Mercadona y otros súper y descubre cuáles encajan de verdad con tu alimentación.", tipo:"Herramienta", dur:"1 min", href:"https://tu-compra-con-ciencia.lovable.app", ready:true},
   {t:"Protege tus hormonas", d:"Cómo reducir los disruptores endocrinos de tu día a día: plásticos, cosmética, cocina y agua.", tipo:"Guía", dur:"10 min", href:"https://docs.google.com/document/d/1E8v6GYfmmAzf7pLyBXRNDNHBgAiYm23IIMMJI-45yH8/view", ready:true},
   {t:"Guía para un cabello saludable", d:"Los hábitos y cuidados que de verdad marcan la diferencia en tu pelo.", tipo:"Guía", dur:"10 min", href:"https://docs.google.com/document/d/184kZZfq671dl8fRHa6S9oUYk4Dh78EC7SmVrsFcMmlU/view", ready:true},
-  {t:"Vídeo: la glicina", d:"Qué es la glicina y para qué te puede servir.", tipo:"Vídeo", dur:"YouTube", href:"https://youtu.be/yts4vSZKCLY", ready:true}
+  {t:"Vídeo: la glicina", d:"Qué es la glicina y para qué te puede servir.", tipo:"Vídeo", dur:"YouTube", href:"https://youtu.be/yts4vSZKCLY", ready:true},
+  /* Bloqueado: cambia el texto de "bloqueo" cuando cambie la condición (ahora: entrar antes de final de año) */
+  {t:"App para comer fuera", d:"Qué elegir en cualquier restaurante para seguir avanzando sin agobiarte.", tipo:"Herramienta", dur:"Clientes", bloqueo:"Solo si entras antes de final de año"}
 ];
-var orden = RECURSOS.filter(function(r){return r.ready}).concat(RECURSOS.filter(function(r){return !r.ready}));
+var orden = RECURSOS.filter(function(r){return r.ready}).concat(RECURSOS.filter(function(r){return !r.ready && !r.bloqueo})).concat(RECURSOS.filter(function(r){return r.bloqueo}));
 document.getElementById('lista').innerHTML = orden.map(function(r){
   var ext = /^https?:/.test(r.href) ? ' target="_blank" rel="noopener"' : '';
+  if(r.bloqueo) return '<li class="bloq"><div class="tags"><span class="tag">' + r.tipo + '</span><span class="tag pronto">🔒 Solo clientes</span></div>' +
+    '<h2>' + r.t + '</h2><p>' + r.d + '</p><span class="btn off">🔒 ' + r.bloqueo + '</span></li>';
   return '<li><div class="tags"><span class="tag">' + r.tipo + ' · ' + r.dur + '</span>' + (r.ready ? '' : '<span class="tag pronto">Próximamente</span>') + '</div>' +
     '<h2>' + r.t + '</h2><p>' + r.d + '</p>' +
     (r.ready ? '<a class="btn" href="' + r.href + '"' + ext + '>Abrir →</a>' : '<span class="btn off">Abrir</span>') + '</li>';
