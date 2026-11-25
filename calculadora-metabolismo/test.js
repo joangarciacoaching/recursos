@@ -84,6 +84,8 @@ JG.iniciar({
     else if(s >= 30){ titulo = 'Modo ahorro activado'; color = '#ff2d5c'; texto = 'Tu cuerpo está en modo ahorro: gasta lo mínimo para protegerse. Por eso, aunque comas poco, la barriga no se mueve. Bajar más la comida solo lo empeoraría.'; }
     else { titulo = 'Modo supervivencia'; color = '#d70438'; texto = 'Tu cuerpo está en modo supervivencia. Seguir así frena tu pérdida de grasa y también tu energía y tu salud. Si los síntomas son intensos o duran mucho, consúltalo también con tu médico.'; }
 
+    /* Coherencia: si no come por debajo de lo que podría, no decirle que come poco */
+    if(actual != null && incMin <= 100) texto = texto.replace('Por eso, aunque comas poco, la barriga no se mueve.', 'Por eso la barriga no se mueve: el freno no es cuánto comes, sino cómo está funcionando tu cuerpo.').replace('Si sigues recortando, cada vez', 'Si sigues igual, cada vez');
     var rangoPot = fmt(potMin) + '-' + fmt(potMax);
     var msg, incHTML = '';
     if(actual == null){
