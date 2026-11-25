@@ -8,7 +8,8 @@ var PAGINAS = [
     f('h2', 'h', 'La ropa te aprieta más por la noche que por la mañana.'),
     f('h3', 'h', 'Tienes gases o digestiones pesadas.'),
     f('h4', 'h', 'Vas irregular al baño.'),
-    f('h5', 'h', 'La barriga te cambia mucho de un día a otro según lo que comes o tu estrés.')
+    f('h5', 'h', 'La barriga te cambia mucho de un día a otro según lo que comes o tu estrés.'),
+    f('h6', 'h', 'Cuando pasas horas sin comer te notas mejor de la barriga, y al comer te hinchas.')
   ]},
   {titulo: 'Tu energía', preguntas: [
     f('a1', 'a', 'Te levantas cansado aunque duermas 7-8 horas.'),
@@ -20,7 +21,7 @@ var PAGINAS = [
   ]}
 ];
 
-var HIDRATOS = 'Prioriza los hidratos en cada comida (fruta madura, patata, arroz, pan de masa madre, miel): es lo que mantiene tu metabolismo encendido, baja el estrés y mejora tu digestión y tu descanso.';
+var HIDRATOS = 'Prioriza hidratos fáciles de digerir: fruta madura, miel, arroz blanco bien cocido o patata. Si algo te sienta peor (por ejemplo, el zumo), quédate con la fruta entera: lo importante es que te siente ligero. Así tu metabolismo se mantiene encendido sin cargar tu digestión.';
 var ACC_H = ['Muévete 10-15 minutos después de cada comida: ayuda a la digestión y baja la hinchazón.',
   'Termina de cenar 2-3 horas antes de dormir, y bebe el agua durante el día, no de golpe por la noche.',
   'Quita los aceites de semillas (girasol, soja, maíz), también los que van escondidos en envasados: inflaman.'];
