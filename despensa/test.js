@@ -65,7 +65,7 @@ JG.iniciar({
     var fueraHTML = fuera.length
       ? '<ul class="errores">' + fuera.map(function(m){ return '<li><b>❌ ' + m[1] + '</b>' + m[2] + '<br><span style="color:var(--verde);font-weight:700">Cámbialo por:</span> ' + m[3] + '</li>'; }).join('') + '</ul>'
       : '<p class="muted">No tienes ningún saboteador en casa. 👏</p>';
-    var faltanHTML = '<p class="muted" style="margin-bottom:12px">Por orden de prioridad: primero los hidratos, luego las grasas estables y después la proteína.</p><ul class="errores">' + BUENOS.map(function(b){
+    var faltanHTML = '<ul class="errores">' + BUENOS.map(function(b){
       var tiene = buenos.indexOf(b[0]) > -1;
       return '<li class="bien"' + (tiene ? ' style="opacity:.6"' : '') + '><b>' + (tiene ? '✅ ' : '🛒 ') + b[1] + (tiene ? ' <span style="font-weight:600">(ya lo tienes)</span>' : '') + '</b>' + b[2] + '</li>';
     }).join('') + '</ul>';
@@ -82,7 +82,7 @@ JG.iniciar({
     var html =
       '<div class="res-bloque">' + JG.anillo(p, color, titulo, 'La nota de tu despensa') + '<p>' + texto + '</p></div>' +
       '<div class="res-bloque"><h3>Saca esto de tu despensa</h3>' + fueraHTML + '</div>' +
-      '<div class="res-bloque"><h3>Tu lista de la compra</h3>' + faltanHTML + '</div>' +
+      '<div class="res-bloque"><h3>Tu lista de la compra, por orden de prioridad:</h3>' + faltanHTML + '</div>' +
       '<div class="res-bloque"><h3>Y además</h3>' + JG.acciones(extra) + filtro + '</div>';
     return {html: html, resumen: resumen, puntuacion: p, extra: {saboteadores: malos, faltan: faltan.map(function(b){ return b[0]; })}};
   }
