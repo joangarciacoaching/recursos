@@ -84,7 +84,7 @@ JG.iniciar({
     var errores = orden.filter(function(k){ return a[k].pct >= .5; }).map(function(k){ return AREAS[k].error; });
     if(R.fuerza === '1b') errores.push(['Entrenas 5 días o más', 'Si además comes poco o duermes mal, entrenar tantos días es más estrés que estímulo. Con 3-4 días bien hechos avanzarías más.']);
     /* Los hidratos van siempre primero: son la base para que tu cuerpo tenga energía para fabricar hormonas */
-    var prio = ['<b>Prioriza los hidratos y come suficiente</b>: fruta madura, zumo natural, miel, patata, arroz o pan de masa madre en cada comida. Es lo que le da a tu cuerpo energía para fabricar hormonas, baja el estrés, acelera tu metabolismo y mejora tu descanso.'];
+    var prio = ['<b>Dale a tus hormonas la energía que necesitan</b>: sin hidratos suficientes, tu cuerpo recorta testosterona para ahorrar. Pon arroz, patata o pan de masa madre en tus comidas, y fruta o miel entre medias: bajará tu cortisol, dormirás mejor y tu metabolismo se acelerará.'];
     prio = prio.concat(orden.filter(function(k){ return k !== 'energia' && a[k].pct > 0; }).slice(0, 2).map(function(k){ return AREAS[k].accion; }));
 
     var aviso = '';
