@@ -5,7 +5,7 @@ var FILTRO = 'https://tu-compra-con-ciencia.lovable.app';
 /* [id, texto, por qué, cámbialo por] */
 var MALOS = [
   ['semillas', 'Aceite de girasol, soja, maíz o colza, u oliva a secas, para cocinar', 'Son grasas que se oxidan con el calor e inflaman.', 'Aceite de oliva virgen extra, mantequilla ecológica o ghee.'],
-  ['envasados', 'Envasados con aceite de girasol en la etiqueta: pan de molde o incluso de masa madre, salsas, hummus, patatas de bolsa…', 'Aunque tú cocines con AOVE, el aceite de girasol se te cuela por aquí. Muchos panes "buenos" lo llevan.', 'Mira la etiqueta: pan de masa madre sin aceites de semillas, salsas caseras con AOVE.'],
+  ['envasados', 'Envasados con aceite de girasol en la etiqueta: pan (incluso de masa madre), tomate en lata o frito, salsas, hummus…', 'Aunque tú cocines con AOVE, el aceite de girasol se te cuela por aquí: incluso muchos panes "buenos" o salsas de tomate lo llevan.', 'Mira la etiqueta: pan sin aceites de semillas, tomate natural triturado y salsas caseras con AOVE.'],
   ['bolleria', 'Bollería, galletas o cereales de desayuno', 'Casi todos están hechos con aceites refinados.', 'Fruta, miel, dátiles, chocolate negro o repostería casera con mantequilla.'],
   ['margarina', 'Margarina o cremas para untar', 'Son aceites vegetales refinados y procesados.', 'Mantequilla de verdad.'],
   ['precocinados', 'Precocinados, pizzas congeladas o fritos de paquete', 'Vienen hechos o fritos con aceites de semillas.', 'Comida sencilla hecha en casa: patata, arroz, huevos, carne o pescado.'],
@@ -17,17 +17,17 @@ var MALOS = [
   ['sarten', 'Sartenes de teflón o de aluminio', 'Pasan tóxicos a la comida, sobre todo cuando están rayadas o muy calientes.', 'Acero inoxidable, hierro o cerámica.'],
   ['plastico', 'Táperes o botellas de plástico', 'Al calentarse pueden soltar disruptores endocrinos.', 'Vidrio.']
 ];
-/* [id, texto, para qué] */
+/* [id, texto, para qué] — en orden de prioridad del método: hidratos, grasas estables, carne roja y pescado, el resto */
 var BUENOS = [
-  ['fruta', 'Fruta madura, zumo de naranja natural, miel o dátiles', 'El azúcar de verdad es la energía más rápida para tu metabolismo. No le tengas miedo.'],
-  ['hidratos', 'Patata, boniato, arroz o pan de masa madre', 'Tu hidrato de cada comida, también en la cena para dormir mejor.'],
-  ['huevos', 'Huevos enteros', 'Proteína completa y la grasa con la que tu cuerpo fabrica hormonas.'],
-  ['carne', 'Carne roja: ternera, cordero… (mejor de pasto)', 'Proteína de calidad con mejor perfil de grasas que el pollo o el cerdo.'],
+  ['fruta', 'Fruta madura, zumo de naranja natural, miel o dátiles', 'La energía más rápida para tu metabolismo: es lo que antes saca a tu cuerpo del modo ahorro.'],
+  ['hidratos', 'Patata, boniato, arroz o pan de masa madre', 'Tu hidrato en cada comida, también en la cena para dormir mejor.'],
+  ['grasas', 'AOVE, mantequilla o ghee, y sal marina sin refinar', 'Grasas estables para cocinar, en lugar de los aceites de semillas.'],
+  ['carne', 'Carne roja: ternera, cordero…', 'Proteína de calidad con mejor perfil de grasas que el pollo o el cerdo.'],
   ['pescado', 'Pescado azul salvaje y marisco', 'DHA y minerales que casi nadie come suficiente.'],
+  ['huevos', 'Huevos enteros', 'Proteína completa y la grasa con la que tu cuerpo fabrica hormonas.'],
   ['lacteos', 'Lácteos enteros: leche, yogur natural, queso', 'Proteína, calcio y saciedad sin productos light.'],
   ['caldo', 'Caldo de huesos, gelatina o vísceras (hígado, corazón…)', 'Equilibran los aminoácidos de la carne y aportan colágeno.'],
-  ['cruciferas', 'Brócoli, coliflor u otras crucíferas', 'Ayudan a tus hormonas.'],
-  ['grasas', 'AOVE, mantequilla o ghee, y sal marina sin refinar', 'Para cocinar con grasas estables y salar bien.']
+  ['cruciferas', 'Brócoli, coliflor u otras crucíferas', 'Ayudan a tus hormonas.']
 ];
 
 var PAGINAS = [
@@ -39,7 +39,7 @@ var PAGINAS = [
   ]},
   {titulo: 'Cómo haces la compra', preguntas: [
     {id:'compra', tipo:'una', t:'¿Cómo sueles hacer la compra?', ops:[['lista','Con lista y lo justo para la semana'],['marcha','Sobre la marcha, lo que me apetece'],['pedido','Pido comida o como fuera casi siempre']]},
-    {id:'noche', tipo:'una', t:'Por la noche, cuando te entra antojo de dulce, ¿qué tienes a mano?', ops:[['paquete','Algo de paquete: galletas, chocolatinas, snacks…'],['nada','Nada: me aguanto y evito comprarlo para no comérmelo'],['real','Fruta, yogur, miel, dátiles o algo de verdad']]},
+    {id:'noche', tipo:'una', t:'Por la noche, cuando te entra antojo de dulce, ¿qué tienes a mano?', ops:[['paquete','Algo de paquete: galletas, chocolatinas, snacks…'],['nada','Nada: me aguanto y evito comprarlo para no comérmelo'],['real','Fruta, yogur, miel, dátiles o algo del estilo']]},
     {id:'etiquetas', tipo:'una', t:'¿Miras las etiquetas de lo que compras?', ops:[['si','Sí'],['aveces','A veces'],['no','No']], noSe: 'No sé qué mirar',
       ciego: ['Qué mirar en una etiqueta', 'Si no sabes leer una etiqueta, los aceites de semillas y los edulcorantes se te cuelan en casi todo lo que compras.']}
   ]}
@@ -65,15 +65,16 @@ JG.iniciar({
     var fueraHTML = fuera.length
       ? '<ul class="errores">' + fuera.map(function(m){ return '<li><b>❌ ' + m[1] + '</b>' + m[2] + '<br><span style="color:var(--verde);font-weight:700">Cámbialo por:</span> ' + m[3] + '</li>'; }).join('') + '</ul>'
       : '<p class="muted">No tienes ningún saboteador en casa. 👏</p>';
-    var faltanHTML = faltan.length
-      ? '<ul class="errores">' + faltan.map(function(b){ return '<li class="bien"><b>🛒 ' + b[1] + '</b>' + b[2] + '</li>'; }).join('') + '</ul>'
-      : '<p class="muted">No te falta nada básico. 👏</p>';
+    var faltanHTML = '<p class="muted" style="margin-bottom:12px">Por orden de prioridad: primero los hidratos, luego las grasas estables y después la proteína.</p><ul class="errores">' + BUENOS.map(function(b){
+      var tiene = buenos.indexOf(b[0]) > -1;
+      return '<li class="bien"' + (tiene ? ' style="opacity:.6"' : '') + '><b>' + (tiene ? '✅ ' : '🛒 ') + b[1] + (tiene ? ' <span style="font-weight:600">(ya lo tienes)</span>' : '') + '</b>' + b[2] + '</li>';
+    }).join('') + '</ul>';
     var extra = [];
     if(malos.indexOf('envasados') === -1 && malos.indexOf('semillas') === -1) extra.push('Aunque cocines con AOVE, revisa la etiqueta del pan, las salsas y los snacks: el aceite de girasol se esconde en muchos envasados.');
     if(R.compra !== 'lista') extra.push('Haz la compra con lista una vez por semana: así entra en casa lo que te ayuda.');
     if(R.noche === 'nada') extra.push('No hace falta aguantarte: el antojo de dulce por la noche suele ser tu cuerpo pidiendo energía. Ten fruta, miel o dátiles a mano y cómetelos sin culpa.');
-    else if(R.noche === 'paquete') extra.push('Cambia lo de paquete por fruta, yogur natural entero, miel o dátiles: el antojo de dulce por la noche suele ser falta de energía, no de fuerza de voluntad.');
-    extra.push('No le tengas miedo al dulce de verdad: la fruta, la miel y los dátiles son tus aliados. Lo que tienes que sacar son los aceites refinados y los edulcorantes.');
+    else if(R.noche === 'paquete') extra.push('Cambia lo de paquete por fruta, un yogur natural entero o algo del estilo: el antojo de dulce por la noche suele ser falta de energía, no de fuerza de voluntad.');
+    extra.push('El azúcar de verdad no es el problema: lo que tienes que sacar de casa son los aceites de semillas y los edulcorantes.');
     var filtro = (R.etiquetas === 'no' || R.etiquetas === JG.NS || R.etiquetas === 'aveces')
       ? '<div class="destacado" style="margin-top:14px">Para no tener que leer cada etiqueta, usa mi <b>filtro de supermercado</b>: buscas el producto y te dice si encaja con estas pautas. <a href="' + FILTRO + '" target="_blank" rel="noopener" style="color:#fff;font-weight:700">Abrir el filtro →</a></div>' : '';
 
@@ -81,7 +82,7 @@ JG.iniciar({
     var html =
       '<div class="res-bloque">' + JG.anillo(p, color, titulo, 'La nota de tu despensa') + '<p>' + texto + '</p></div>' +
       '<div class="res-bloque"><h3>Saca esto de tu despensa</h3>' + fueraHTML + '</div>' +
-      '<div class="res-bloque"><h3>Añade esto a tu lista de la compra</h3>' + faltanHTML + '</div>' +
+      '<div class="res-bloque"><h3>Tu lista de la compra</h3>' + faltanHTML + '</div>' +
       '<div class="res-bloque"><h3>Y además</h3>' + JG.acciones(extra) + filtro + '</div>';
     return {html: html, resumen: resumen, puntuacion: p, extra: {saboteadores: malos, faltan: faltan.map(function(b){ return b[0]; })}};
   }
