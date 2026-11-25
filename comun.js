@@ -43,7 +43,7 @@ var JG = (function(){
   function cta(o){
     return '<div class="cta"><h3>¿Quieres que revise tu caso?</h3>' +
       '<p>Mándame tu resultado y te digo por dónde empezar.</p>' +
-      '<a class="btn btn-wa" target="_blank" rel="noopener" href="' + urlWhatsApp(o.mensaje) + '">Enviarme mi diagnóstico por WhatsApp →</a>' +
+      '<a class="btn btn-wa" target="_blank" rel="noopener" href="' + urlWhatsApp(o.mensaje) + '">Envíame tu resultado por WhatsApp →</a>' +
       '<small>Se abre WhatsApp con tu resultado ya escrito. Solo tienes que darle a enviar.</small></div>';
   }
 
