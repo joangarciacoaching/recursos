@@ -1,5 +1,6 @@
 /* Test: ¿Qué está bajando tu testosterona? (palabra clave TESTOSTERONA)
-   Cada opción vale 0 (como un hombre de hace 50 años), 1 (a medio camino) o 2 (como uno de ahora). */
+   Cada opción vale 0 (como un hombre de hace 50 años), 1 (a medio camino) o 2 (como uno de ahora).
+   Basado en la guía de testosterona de Joan: energía disponible, calidad de la comida, sol y sueño, estrés, fuerza y tóxicos. */
 function q(id, area, t, ops, extra){ var o = {id: id, area: area, tipo: 'una', t: t, ops: ops}; for(var k in extra || {}) o[k] = extra[k]; return o; }
 var FREQ_MALO = [['0','Nunca'],['1','A veces'],['2','Casi siempre'],['2b','Siempre']];
 
@@ -8,20 +9,23 @@ var PAGINAS = [
     q('sol', 'sol', '¿Cuánto sol directo te da al día?', [['2','Casi nada: casa, coche y oficina'],['1','Un rato, 10-30 minutos'],['0','Más de 30 minutos al aire libre']]),
     q('acostar', 'sol', '¿A qué hora te sueles acostar?', [['2','Después de las 00:30'],['1','Entre las 23:00 y las 00:30'],['0','Antes de las 23:00']]),
     q('horas', 'sueno', '¿Cuántas horas duermes de verdad?', [['2','Menos de 6'],['1','Entre 6 y 7'],['0','7 o más']]),
-    q('movil', 'sueno', 'Te llevas el móvil a la cama y es lo último que miras.', FREQ_MALO),
+    q('movil', 'sueno', 'El móvil es lo último que miras antes de dormir.', FREQ_MALO),
     q('estres', 'estres', 'Vas estresado: trabajo, familia y poco tiempo para ti.', FREQ_MALO),
     q('cafe', 'estres', '¿Cuánto café o bebidas energéticas tomas?', [['2','3 o más al día, o energéticas'],['1','1-2 cafés'],['0','Uno por la mañana o ninguno']])
   ]},
-  {titulo: 'Tu comida y tu cuerpo', preguntas: [
-    q('comida', 'comida', '¿Cómo es lo que comes normalmente?', [['2','Bastante procesado y de paquete'],['1','Mezcla de casero y procesado'],['0','Comida real casi siempre']]),
-    q('dieta', 'comida', 'Estás a dieta, haces ayunos o quitas hidratos.', FREQ_MALO),
-    q('grasas', 'comida', '¿Comes huevos enteros, carne roja, mantequilla o lácteos enteros?', [['2','Los evito: claras, pechuga, todo light'],['1','A veces'],['0','Sí, con normalidad']], {ayuda:'Tu cuerpo fabrica la testosterona a partir del colesterol.'}),
-    q('fuerza', 'fuerza', '¿Cuántos días entrenas fuerza a la semana?', [['2','Ninguno'],['1','1-2 días'],['0','3-4 días']]),
-    q('sentado', 'fuerza', '¿Cuántas horas pasas sentado al día?', [['2','Más de 8'],['1','Entre 5 y 8'],['0','Menos de 5']]),
-    q('alcohol', 'toxicos', 'Bebes alcohol durante la semana.', FREQ_MALO),
-    q('plastico', 'toxicos', 'Calientas comida en táperes de plástico o bebes de botellas de plástico.', FREQ_MALO)
+  {titulo: 'Tu comida', preguntas: [
+    q('dieta', 'energia', 'Estás a dieta o comiendo menos para bajar de peso.', FREQ_MALO),
+    q('ayuno', 'energia', 'Haces ayunos o te saltas comidas.', FREQ_MALO),
+    q('hidratos', 'energia', 'Quitas o reduces los hidratos (fruta, miel, pan, arroz, patata).', FREQ_MALO),
+    q('grasas', 'comida', '¿Comes huevos enteros, carne roja y lácteos enteros?', [['2','Los evito: claras, pechuga, todo light'],['1','A veces'],['0','Sí, con normalidad']], {ayuda:'Tu cuerpo fabrica la testosterona a partir del colesterol.'}),
+    q('aceite', 'comida', '¿Con qué aceite se cocina lo que comes?', [['2','Girasol u oliva a secas'],['1','Depende, un poco de todo'],['0','Oliva virgen extra, mantequilla o ghee']]),
+    q('paquete', 'comida', '¿Cuánto de lo que comes viene de paquete (bollería, snacks, salsas, precocinados)?', [['2','Bastante'],['1','Algo'],['0','Casi nada']]),
+    q('alcohol', 'toxicos', 'Bebes alcohol durante la semana.', FREQ_MALO)
   ]},
-  {titulo: 'Tus señales', preguntas: [
+  {titulo: 'Tu cuerpo y tus señales', preguntas: [
+    q('fuerza', 'fuerza', '¿Cuántos días entrenas fuerza a la semana?', [['2','Ninguno'],['1','1-2 días'],['0','3-4 días'],['1b','5 o más']]),
+    q('sentado', 'fuerza', '¿Cuántas horas pasas sentado al día?', [['2','Más de 8'],['1','Entre 5 y 8'],['0','Menos de 5']]),
+    q('plastico', 'toxicos', 'Calientas comida en táperes de plástico o bebes de botellas de plástico.', FREQ_MALO),
     {id:'senales', tipo:'multi', t:'¿Notas alguna de estas cosas?', ayuda:'Marca todas las que te suenen.', ops:[
       ['libido','Menos libido o menos erecciones por la mañana que antes'],
       ['energia','Poca energía o desgana durante el día'],
@@ -32,17 +36,18 @@ var PAGINAS = [
       ['recupera','Tardas mucho en recuperarte de los entrenos'],
       ['ninguna','Ninguna de estas']]},
     {id:'analitica', tipo:'una', t:'¿Te has hecho una analítica de testosterona en el último año?', ops:[['bajo','Sí, y salía baja o justa'],['normal','Sí, y salía bien'],['no','No']], noSe: true,
-      ciego: ['Tu testosterona real', 'Estás intentando mejorar algo que nunca has medido. Una analítica te dice de dónde partes.']}
+      ciego: ['Tu testosterona real', 'Estás intentando mejorar algo que no conoces. Una analítica te dice de dónde partes.', 'mi testosterona real']}
   ]}
 ];
 
 var AREAS = {
-  sol: {nombre:'Sol y ritmos', error:['Vives desregulado del sol', 'Los hombres de antes vivían con la luz del día. Poca luz por la mañana y acostarte tarde desajustan tu reloj interno, y con él tus hormonas.'], accion:'Sal a la luz del sol en la primera hora del día (10-15 minutos, sin gafas de sol) y adelanta 30 minutos la hora de acostarte.'},
-  sueno: {nombre:'Sueño', error:['Duermes poco o mal', 'La mayor parte de la testosterona se fabrica mientras duermes. Con menos de 7 horas y el móvil en la cama, tu cuerpo no llega a producirla.'], accion:'Duerme 7-8 horas y deja el móvil fuera de la habitación.'},
-  comida: {nombre:'Comida', error:['Comes poco o comes "de mentira"', 'Dietas eternas, quitar hidratos, huir de las grasas y comer procesados: tu cuerpo no tiene la materia prima ni la energía para fabricar hormonas.'], accion:'Come suficiente y de verdad: huevos enteros, carne, lácteos enteros, fruta, arroz y patata. Fuera lo light y lo de paquete.'},
-  estres: {nombre:'Estrés y estimulantes', error:['Vives en alerta', 'Estrés todo el día y café para aguantar: el cortisol alto frena la testosterona. Son hormonas que compiten.'], accion:'Retrasa el primer café al menos 1 hora después de despertarte, nada de cafeína después de las 14:00 y un rato al día sin pantallas.'},
-  fuerza: {nombre:'Fuerza y movimiento', error:['Te exiges poco físicamente', 'Muchas horas sentado y poca fuerza: a tu cuerpo no le das ningún motivo para fabricar músculo ni testosterona.'], accion:'Entrena fuerza 3-4 días con pocos ejercicios y mucha intensidad, y levántate cada hora a moverte.'},
-  toxicos: {nombre:'Tóxicos del día a día', error:['Alcohol y plásticos en tu día a día', 'El alcohol y los plásticos calientes, que liberan disruptores endocrinos, juegan en contra de tus hormonas.'], accion:'Pasa a táperes de vidrio, no calientes nada en plástico y deja el alcohol fuera de tu semana.'}
+  energia: {nombre:'Energía disponible', error:['Le das a tu cuerpo señales de escasez', 'Dietas, ayunos y pocos hidratos le dicen a tu cuerpo que falta energía. Y cuando falta energía, una de las primeras cosas que recorta es la producción de hormonas.'], accion:'Come suficiente y sin miedo al azúcar de verdad: fruta madura en cada comida, algo de miel durante el día e hidrato (patata, arroz, pan de masa madre) en cada plato.'},
+  comida: {nombre:'Calidad de lo que comes', error:['A tus hormonas les falta materia prima', 'Huir de las yemas, la carne roja y los lácteos enteros, y comer aceites de semillas (girasol, soja, maíz), que van en casi todo lo envasado, deja a tus hormonas sin materia prima y con más inflamación.'], accion:'Huevos enteros, carne roja, pescado y marisco, y lácteos enteros. Cocina con AOVE, mantequilla o ghee, y fuera los aceites de semillas, también los escondidos en envasados.'},
+  sol: {nombre:'Sol y ritmos', error:['Vives desregulado del sol', 'Los hombres de antes vivían con la luz del día. Poca luz por la mañana y acostarte tarde desajustan tu reloj interno, que es el que marca cuándo se fabrican tus hormonas.'], accion:'Nada más despertar, 5-10 minutos a la luz del sol sin gafas, y ve adelantando la hora de acostarte hacia las 22:00-23:00.'},
+  sueno: {nombre:'Sueño', error:['Duermes poco o mal', 'Gran parte de la testosterona se fabrica mientras duermes. Con pocas horas y el móvil hasta el último minuto, tu cuerpo no llega a producirla.'], accion:'Duerme 7-8 horas, deja el móvil fuera de la habitación y cena con hidratos (patata, arroz o fruta): dormirás más profundo.'},
+  estres: {nombre:'Estrés y estimulantes', error:['Vives en alerta', 'Estrés todo el día y café para aguantar: tu cuerpo vive tirando de cortisol y adrenalina, y eso frena la testosterona.'], accion:'Toma el primer café al menos 1 hora después de despertarte, nada de cafeína por la tarde y busca un rato al día sin pantallas.'},
+  fuerza: {nombre:'Fuerza y movimiento', error:['Le das pocos motivos a tu cuerpo', 'Muchas horas sentado y poca fuerza bien hecha: tu cuerpo no tiene motivo para fabricar músculo ni testosterona.'], accion:'Entrena fuerza 3-4 días con pocos ejercicios y series intensas, y camina: acércate a los 10.000 pasos al día.'},
+  toxicos: {nombre:'Tóxicos del día a día', error:['Alcohol y plásticos en tu día a día', 'El alcohol y los plásticos, sobre todo calientes, son disruptores endocrinos: juegan en contra de tus hormonas.'], accion:'Pasa a vidrio para guardar y calentar la comida, y deja el alcohol fuera de tu semana.'}
 };
 
 JG.iniciar({
@@ -50,7 +55,6 @@ JG.iniciar({
   nombre: 'test de la testosterona',
   paginas: PAGINAS,
   cargando: ['Analizando tus hábitos…', 'Comparándolos con los de un hombre de hace 50 años…', 'Preparando tus prioridades…'],
-  ctaTexto: 'Mándame tu resultado y te digo qué cambiaría yo primero en tu caso para recuperar tu energía.',
   calcular: function(R){
     var a = {};
     Object.keys(AREAS).forEach(function(k){ a[k] = {s: 0, max: 0}; });
@@ -61,6 +65,7 @@ JG.iniciar({
     var total = 0, maxTotal = 0;
     Object.keys(a).forEach(function(k){ total += a[k].s; maxTotal += a[k].max; a[k].pct = a[k].max ? a[k].s / a[k].max : null; });
     var senales = (R.senales || []).filter(function(x){ return x !== 'ninguna'; });
+    if(maxTotal < 6 && !senales.length) return {vacio: true};
     var pts = Math.round(100 - (maxTotal ? total / maxTotal : 0.4) * 80 - Math.min(senales.length * 3, 20));
     pts = Math.max(5, Math.min(98, pts));
 
@@ -77,6 +82,7 @@ JG.iniciar({
       return JG.barra(AREAS[k].nombre, 100 - Math.round(p * 100), p >= .6 ? 'Como un hombre de ahora' : p >= .3 ? 'Mejorable' : 'Como uno de antes', c);
     }).join('');
     var errores = orden.filter(function(k){ return a[k].pct >= .5; }).map(function(k){ return AREAS[k].error; });
+    if(R.fuerza === '1b') errores.push(['Entrenas 5 días o más', 'Si además comes poco o duermes mal, entrenar tantos días es más estrés que estímulo. Con 3-4 días bien hechos avanzarías más.']);
     var prio = orden.slice(0, 3).filter(function(k){ return a[k].pct > 0; }).map(function(k){ return AREAS[k].accion; });
     if(!prio.length) prio = ['Mantén tus hábitos y céntrate en entrenar con intensidad y comer suficiente.'];
 
