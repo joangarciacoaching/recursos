@@ -20,17 +20,18 @@ var PAGINAS = [
   ]}
 ];
 
+var HIDRATOS = 'Prioriza los hidratos en cada comida (fruta madura, patata, arroz, pan de masa madre, miel): es lo que mantiene tu metabolismo encendido, baja el estrés y mejora tu digestión y tu descanso.';
 var ACC_H = ['Muévete 10-15 minutos después de cada comida: ayuda a la digestión y baja la hinchazón.',
-  'Reparte la fruta y los hidratos durante el día en vez de llegar con mucha hambre a la noche.',
   'Termina de cenar 2-3 horas antes de dormir, y bebe el agua durante el día, no de golpe por la noche.',
   'Quita los aceites de semillas (girasol, soja, maíz), también los que van escondidos en envasados: inflaman.'];
-var ACC_A = ['Deja de recortar: fruta o miel en cada comida e hidrato en cada plato, también en la cena.',
+var ACC_A = ['Deja de recortar: come suficiente en cada comida, también en la cena.',
   'Aparca los ayunos y el cardio para quemar: tu cuerpo necesita sentir que la energía no falta.',
   'Entrena fuerza 3-4 días con pocos ejercicios bien hechos, y duerme 7-8 horas.'];
 var PERFIL = {
-  A: {t:'Tu barriga tiene mucho de hinchazón', yo:'Mi barriga tiene mucho de hinchazón', p:['Buena noticia: parte de lo que ves en el espejo no es grasa, es hinchazón. Viene de cómo digieres, del estrés y de lo que comes (y cuándo).', 'Esto se puede bajar rápido, sin pasar hambre.'], acc: ACC_H.slice(0, 3).concat([ACC_H[3]])},
-  B: {t:'Tu barriga es grasa y tu cuerpo está en modo ahorro', yo:'Mi barriga es grasa y mi cuerpo está en modo ahorro', p:['Llevas tiempo dándole a tu cuerpo poca energía, y eso le dice una cosa: ahorra. Por eso vas a medio gas, con frío, cansado y con la barriga ahí.', 'No necesitas recortar más. Por eso en mi método se pierde grasa comiendo más, no menos: dándole a tu cuerpo razones para volver a gastar.'], acc: ACC_A},
-  C: {t:'Tienes un poco de las dos', yo:'Mi barriga tiene un poco de hinchazón y un poco de grasa', p:['Parte de tu barriga es hinchazón (digestión, estrés, comida) y parte es grasa que no baja porque tu cuerpo está algo en modo ahorro.', 'La clave es atacar las dos cosas a la vez, sin dietas extremas.'], acc: [ACC_H[0], ACC_H[2], ACC_A[0], ACC_A[1]]}
+  A: {t:'Tu barriga es sobre todo hinchazón', yo:'Mi barriga es sobre todo hinchazón', p:['Buena noticia: buena parte de lo que ves en el espejo no es grasa, es hinchazón. Viene de cómo digieres, del estrés y de lo que comes (y cuándo).', 'Esto se puede bajar rápido, sin pasar hambre.'], acc: [HIDRATOS, ACC_H[0], ACC_H[1], ACC_H[2]]},
+  B: {t:'Tu barriga es sobre todo grasa, y tu cuerpo está en modo ahorro', yo:'Mi barriga es sobre todo grasa y mi cuerpo está en modo ahorro', p:['Tu barriga no cambia mucho durante el día: es grasa. Y no baja porque llevas tiempo dándole a tu cuerpo poca energía, y eso le dice una cosa: ahorra. Por eso vas a medio gas, con frío o cansado.', 'No necesitas recortar más. En mi método se pierde grasa comiendo más, no menos: dándole a tu cuerpo razones para volver a gastar.'], acc: [HIDRATOS, ACC_A[0], ACC_A[1], ACC_A[2]]},
+  C: {t:'Tu barriga es mitad hinchazón, mitad grasa', yo:'Mi barriga es mitad hinchazón, mitad grasa', p:['Parte de tu barriga es hinchazón (digestión, estrés, comida) y parte es grasa que no baja porque tu cuerpo está algo en modo ahorro.', 'La clave es atacar las dos cosas a la vez, sin dietas extremas.'], acc: [HIDRATOS, ACC_H[0], ACC_H[1], ACC_A[1]]},
+  D: {t:'Tu barriga es sobre todo grasa, pero tu cuerpo responde bien', yo:'Mi barriga es sobre todo grasa, pero mi cuerpo responde bien', p:['Ni tienes mucha hinchazón ni señales claras de modo ahorro: tu cuerpo responde bien.', 'Así que lo que queda es afinar: qué comes, cuándo y cómo entrenas, sin recortar a lo loco.'], acc: [HIDRATOS, ACC_A[2], ACC_H[2]]}
 };
 
 JG.iniciar({
@@ -51,7 +52,9 @@ JG.iniciar({
     var h = suma('h'), a = suma('a');
     if(h.n + a.n < 2) return {vacio: true};
     var hp = h.pct || 0, ap = a.pct || 0;
-    var perfil = (hp >= .55 && hp >= ap) ? 'A' : (ap >= .55 ? 'B' : (hp >= .55 ? 'A' : 'C'));
+    /* Hinchazón = la barriga cambia durante el día y con la digestión. Modo ahorro = señales de poca energía y recortes.
+       Gana el eje que destaca claramente; si los dos están parejos y altos, mitad y mitad; si los dos están bajos, grasa con un cuerpo que responde. */
+    var perfil = (hp < .35 && ap < .35) ? 'D' : (hp - ap >= .15 ? 'A' : (ap - hp >= .15 ? 'B' : 'C'));
     var c = PERFIL[perfil];
     var fz = R.fuerza;
     var train = fz === '0' ? 'Ahora mismo no entrenas fuerza. Empezar con 2-3 días a la semana va a cambiar mucho cómo responde tu cuerpo.'
@@ -64,7 +67,8 @@ JG.iniciar({
     var resumen = c.yo + '. Hinchazón ' + nota(h).toLowerCase() + ', modo ahorro ' + nota(a).toLowerCase() + '.';
     var html =
       '<div class="res-bloque"><p class="eyebrow">Tu resultado</p><h2 style="font-size:26px">' + c.t + '</h2>' +
-      '<div class="barras" style="margin-top:16px">' + JG.barra('Hinchazón', (h.pct || 0) * 100, nota(h), '#f0a020') + JG.barra('Modo ahorro', (a.pct || 0) * 100, nota(a), '#d70438') + '</div></div>' +
+      '<div class="barras" style="margin-top:16px">' + JG.barra('Hinchazón', (h.pct || 0) * 100, nota(h), '#f0a020') + JG.barra('Modo ahorro (grasa que tu cuerpo protege)', (a.pct || 0) * 100, nota(a), '#d70438') + '</div>' +
+      '<p class="muted" style="margin-top:12px;font-size:14px">Si tu barriga cambia mucho de la mañana a la noche y con las digestiones, es hinchazón. Si está igual todo el día y vas con frío, cansado o comiendo poco, es grasa que tu cuerpo está protegiendo.</p></div>' +
       '<div class="res-bloque">' + c.p.map(function(t){ return '<p style="margin-bottom:10px">' + t + '</p>'; }).join('') + (train ? '<p class="muted">' + train + '</p>' : '') + '</div>' +
       '<div class="res-bloque"><h3>Por dónde empezar</h3>' + JG.acciones(c.acc) + '</div>';
     return {html: html, resumen: resumen, puntuacion: null, extra: {perfil: perfil, hinchazon: h, ahorro: a, recortes: R.recortes || []}};
