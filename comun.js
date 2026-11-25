@@ -42,7 +42,7 @@ var JG = (function(){
   /* Bloque final: un único botón de WhatsApp */
   function cta(o){
     return '<div class="cta"><h3>¿Quieres que revise tu caso?</h3>' +
-      '<p>Mándame tu resultado y te digo cómo empezaría.</p>' +
+      '<p>Mándame tu resultado y te digo por dónde empezar.</p>' +
       '<a class="btn btn-wa" target="_blank" rel="noopener" href="' + urlWhatsApp(o.mensaje) + '">Enviarme mi diagnóstico por WhatsApp →</a>' +
       '<small>Se abre WhatsApp con tu resultado ya escrito. Solo tienes que darle a enviar.</small></div>';
   }
@@ -145,7 +145,7 @@ var JG = (function(){
     }
     var ciegos = puntosCiegos();
     guardar({recurso: T.recurso, resultado: res.resumen, puntuacion: res.puntuacion, datos: {respuestas: R, ciegos: ciegos.map(function(c){ return c[0]; }), extra: res.extra || null}});
-    var mensaje = 'Hola Joan. He hecho tu ' + T.nombre + '. ' + res.resumen + (ciegos.length ? ' No sé: ' + ciegos.map(function(c){ return c[2] || c[0].toLowerCase(); }).join(', ') + '.' : '') + ' ¿Cómo empezarías en mi caso?';
+    var mensaje = 'Hola Joan. He hecho tu ' + T.nombre + '. ' + res.resumen + (ciegos.length ? ' No sé: ' + ciegos.map(function(c){ return c[2] || c[0].toLowerCase(); }).join(', ') + '.' : '') + ' ¿Por dónde empiezo?';
     var html = res.html + (ciegos.length ? bloqueCiegos(ciegos) : '') + cta({mensaje: mensaje});
     setTimeout(function(){
       clearInterval(iv);

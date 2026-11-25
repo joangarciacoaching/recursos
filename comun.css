@@ -112,3 +112,5 @@ ol.acciones li i{flex:0 0 30px;height:30px;border-radius:50%;background:var(--ro
 .listo-ico{width:72px;height:72px;margin:0 auto 16px;border-radius:50%;background:var(--rojo);color:#fff;font-size:38px;font-weight:900;display:flex;align-items:center;justify-content:center}
 .listo h2{margin:0}
 .kcal .dif{display:block;margin-top:6px;font-size:14px;font-weight:800;color:#7fb36e}
+.inc{text-align:center;margin:4px 0 14px;font-size:28px;font-weight:900;color:#7fb36e;line-height:1.15}
+.inc small{display:block;font-size:13px;color:var(--gris);font-weight:600;margin-top:4px}
