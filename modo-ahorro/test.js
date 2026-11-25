@@ -48,7 +48,7 @@ var PAGINAS = [
 
 /* Por qué te frena cada área (sin hablar de las demás, para que el resultado sea coherente) */
 var EXPLICA = {
-  nutricion: 'Cuando comes poco durante mucho tiempo, quitas hidratos o ayunas, tu cuerpo entiende que hay escasez: tira de hormonas del estrés, gasta menos y la barriga no se mueve. No necesitas recortar más: necesitas darle energía para que vuelva a gastar.',
+  nutricion: 'Cuando comes poco durante mucho tiempo, quitas hidratos o ayunas, tu cuerpo entiende que hay escasez: tira de hormonas del estrés, gasta menos y la barriga no se mueve. No necesitas recortar más: necesitas darle energía, empezando por los hidratos, para que vuelva a gastar.',
   sueno: 'Vivimos desregulados del sol: poca luz por la mañana, pantallas hasta tarde y menos horas de sueño. Sin ese descanso tu cuerpo no se recupera: tienes más hambre, menos energía y, con el tiempo, también lo acaban pagando tus hormonas.',
   hormonas: 'Menos ganas, menos empuje, más grasa en la barriga y el pecho y menos progreso en el gimnasio son señales de que tus hormonas van justas. Casi siempre es consecuencia de cómo vives, no de la edad.',
   estres: 'Vivir con prisas, tirar de café y no soltar el móvil le dice a tu cuerpo que está en alerta permanente. Vive a base de cortisol y adrenalina, y la grasa de la barriga es la primera en notarlo.',
@@ -62,12 +62,14 @@ var MEJOR = {
   estres: 'Llevas bien el estrés: es tu punto fuerte.',
   entreno: 'Tu forma de entrenar y moverte es tu punto fuerte.'
 };
+/* Siempre va primero: los hidratos son la prioridad del método */
+var HIDRATOS = '<b>Prioriza los hidratos en cada comida</b>: fruta madura, zumo natural, miel, patata, arroz o pan de masa madre. Es lo que más rápido saca a tu cuerpo del modo ahorro, baja el estrés, acelera tu metabolismo y mejora tu descanso.';
 var ACCIONES = {
-  nutricion: ['Fruta madura o miel en cada comida: es la energía más rápida para salir del modo ahorro.', 'Hidrato en cada comida principal (patata, arroz, pan de masa madre), también en la cena.', 'Deja los ayunos por ahora: tu cuerpo necesita sentir que la energía no falta.'],
-  sueno: ['Nada más despertar, 5-10 minutos a la luz del sol, sin gafas.', 'Acuéstate entre las 22:00 y las 23:00, también el fin de semana.', 'Cena con hidratos 2-3 horas antes de dormir y deja las pantallas la última media hora.'],
-  hormonas: ['Entrena fuerza 3-4 días con pocos ejercicios y cada serie con intensidad real.', 'Come suficiente: huevos enteros, carne roja, pescado, lácteos enteros, fruta y miel.', 'Quita los aceites de semillas (girasol, soja, maíz), también los que van dentro de los envasados.'],
-  estres: ['Toma el primer café al menos 1 hora después de despertarte.', 'La primera media hora del día, sin móvil.', 'Ten fruta o miel a mano: con energía disponible tu cuerpo no necesita tirar de cortisol.'],
-  entreno: ['Camina 10-15 minutos después de las comidas y acércate a los 10.000 pasos al día.', 'Entrena fuerza con pocos ejercicios bien hechos en lugar de sesiones eternas.', 'Toma fruta o miel antes y durante el entreno: nada de entrenar en ayunas.']
+  nutricion: ['Deja de recortar: come suficiente en cada comida, también en la cena.', 'Deja los ayunos por ahora: tu cuerpo necesita sentir que la energía no falta.'],
+  sueno: ['Nada más despertar, 5-10 minutos a la luz del sol, sin gafas.', 'Acuéstate entre las 22:00 y las 23:00 y cena con hidratos 2-3 horas antes: dormirás más profundo.'],
+  hormonas: ['Entrena fuerza 3-4 días con pocos ejercicios y cada serie con intensidad real.', 'Cocina con AOVE, mantequilla o ghee, quita los aceites de semillas y prioriza carne roja, huevos y pescado.'],
+  estres: ['Toma el primer café al menos 1 hora después de despertarte, y después de desayunar.', 'La primera media hora del día, sin móvil.'],
+  entreno: ['Camina 10-15 minutos después de las comidas y acércate a los 10.000 pasos al día.', 'Entrena fuerza con pocos ejercicios bien hechos y con hidratos antes y durante el entreno (por ejemplo, miel en el agua), nunca en ayunas.']
 };
 
 JG.iniciar({
@@ -109,8 +111,8 @@ JG.iniciar({
 
     var foco = orden.filter(function(p){ return p.pct >= .3; }).slice(0, 2);
     if(!foco.length && peor) foco = [peor];
-    var acc = [];
-    foco.forEach(function(p){ acc = acc.concat(ACCIONES[p.id].slice(0, foco.length > 1 ? 2 : 3)); });
+    var acc = [nivel >= 30 ? HIDRATOS : HIDRATOS.replace('lo que más rápido saca a tu cuerpo del modo ahorro', 'lo que mantiene tu metabolismo encendido')];
+    foco.forEach(function(p){ acc = acc.concat(ACCIONES[p.id]); });
     if(R.temp !== 'baja' && R.temp !== 'normal') acc.push('Mírate la temperatura nada más despertar un par de días: te dirá mucho de cómo funciona tu metabolismo.');
 
     var hayMejor = mejor && peor && mejor.id !== peor.id && mejor.pct < .3;
