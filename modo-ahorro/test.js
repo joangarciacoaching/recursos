@@ -8,22 +8,23 @@ var AREAS = [
   {id:'entreno', nombre:'Entreno y movimiento'}
 ];
 function f(id, area, t){ return {id: id, area: area, tipo: 'freq', t: t}; }
+function u(id, area, t, ops){ return {id: id, area: area, tipo: 'una', t: t, ops: ops}; }
 
 var PAGINAS = [
   {titulo: 'Cómo comes y te mueves', preguntas: [
-    f('nut1', 'nutricion', 'Pasas la mayor parte del año a dieta o intentando bajar de peso.'),
-    f('nut2', 'nutricion', 'Quitas o reduces los hidratos (fruta, pan, arroz, patata) para no engordar.'),
-    f('nut3', 'nutricion', 'Haces ayunos o te saltas comidas.'),
-    f('ent1', 'entreno', 'Pasas casi todo el día sentado.'),
+    u('nut1', 'nutricion', '¿Cuánto tiempo del año pasas a dieta o intentando bajar de peso?', [['0','Nunca o casi nunca'],['1','Alguna temporada'],['2','Buena parte del año'],['3','Casi todo el año']]),
+    u('nut2', 'nutricion', '¿Quitas o reduces los hidratos (fruta, pan, arroz, patata) para no engordar?', [['0','No, los como sin problema'],['1','A veces, según el día'],['2','Los reduzco bastante'],['3','Casi no los como']]),
+    u('nut3', 'nutricion', '¿Haces ayunos o te saltas comidas?', [['0','No'],['1','De vez en cuando'],['2','Varias veces por semana'],['3','Casi todos los días']]),
+    u('ent1', 'entreno', '¿Cuántas horas pasas sentado al día?', [['0','Menos de 5 horas'],['1','Entre 5 y 7 horas'],['2','Entre 8 y 10 horas'],['3','Más de 10 horas']]),
     f('ent2', 'entreno', 'El entreno te deja reventado el resto del día.'),
-    f('ent3', 'entreno', 'Haces cardio para quemar más calorías.')
+    u('ent3', 'entreno', '¿Cuántos días a la semana haces cardio para quemar calorías?', [['0','Ninguno o solo camino'],['1','1-2 días'],['2','3-4 días'],['3','5 o más']])
   ]},
   {titulo: 'Cómo duermes y vives el día', preguntas: [
     {id:'horas', area:'sueno', tipo:'una', t:'¿Cuántas horas duermes de verdad?', ops:[['3','Menos de 6'],['2','Entre 6 y 7'],['0','Entre 7 y 8'],['0b','Más de 8']], noSe: true,
       ciego: ['Cuánto duermes de verdad', 'Sin saber cuánto descansas, no sabes si tu cuerpo tiene tiempo para recuperarse y fabricar hormonas.', 'cuánto duermo de verdad']},
-    f('sue2', 'sueno', 'Te acuestas después de las 23:30.'),
-    f('sue3', 'sueno', 'Apenas te da la luz del sol por la mañana.'),
-    f('est1', 'estres', 'Necesitas café u otros estimulantes para funcionar.'),
+    u('sue2', 'sueno', '¿A qué hora te sueles acostar?', [['0','Antes de las 23:00'],['1','Entre las 23:00 y las 23:30'],['2','Entre las 23:30 y las 00:30'],['3','Después de las 00:30']]),
+    u('sue3', 'sueno', '¿Te da la luz del sol por la mañana?', [['0','Sí, casi todos los días'],['1','Algunos días'],['2','Pocas veces'],['3','Casi nunca']]),
+    u('est1', 'estres', '¿Cuántos cafés o estimulantes necesitas para funcionar?', [['0','Ninguno'],['1','1 al día'],['2','2-3 al día'],['3','Más de 3, o bebidas energéticas']]),
     f('est2', 'estres', 'Pasas el día con prisas, estrés o sin desconectar del trabajo.'),
     f('est3', 'estres', 'Miras el móvil en la cama, antes de dormir o nada más despertar.')
   ]},
@@ -63,7 +64,7 @@ var MEJOR = {
   entreno: 'Tu forma de entrenar y moverte es tu punto fuerte.'
 };
 /* Siempre va primero: los hidratos son la prioridad del método */
-var HIDRATOS = '<b>Prioriza los hidratos en cada comida</b>: fruta madura, zumo natural, miel, patata, arroz o pan de masa madre. Es lo que más rápido saca a tu cuerpo del modo ahorro, baja el estrés, acelera tu metabolismo y mejora tu descanso.';
+var HIDRATOS = '<b>Los hidratos son tu salida del modo ahorro</b>: fruta, miel o zumo natural por la mañana y entre horas, y arroz, patata o pan de masa madre en comida y cena. Con energía disponible tu cuerpo deja de ahorrar, baja el estrés, se acelera y duerme mejor.';
 var ACCIONES = {
   nutricion: ['Deja de recortar: come suficiente en cada comida, también en la cena.', 'Deja los ayunos por ahora: tu cuerpo necesita sentir que la energía no falta.'],
   sueno: ['Nada más despertar, 5-10 minutos a la luz del sol, sin gafas.', 'Acuéstate entre las 22:00 y las 23:00 y cena con hidratos 2-3 horas antes: dormirás más profundo.'],
@@ -111,7 +112,7 @@ JG.iniciar({
 
     var foco = orden.filter(function(p){ return p.pct >= .3; }).slice(0, 2);
     if(!foco.length && peor) foco = [peor];
-    var acc = [nivel >= 30 ? HIDRATOS : HIDRATOS.replace('lo que más rápido saca a tu cuerpo del modo ahorro', 'lo que mantiene tu metabolismo encendido')];
+    var acc = [nivel >= 30 ? HIDRATOS : HIDRATOS.replace('Los hidratos son tu salida del modo ahorro', 'Los hidratos mantienen tu metabolismo encendido')];
     foco.forEach(function(p){ acc = acc.concat(ACCIONES[p.id]); });
     if(R.temp !== 'baja' && R.temp !== 'normal') acc.push('Mírate la temperatura nada más despertar un par de días: te dirá mucho de cómo funciona tu metabolismo.');
 
