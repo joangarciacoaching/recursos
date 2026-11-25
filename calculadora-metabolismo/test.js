@@ -86,17 +86,20 @@ JG.iniciar({
 
     /* Coherencia: si no come por debajo de lo que podría, no decirle que come poco */
     if(actual != null && incMin <= 100) texto = texto.replace('Por eso, aunque comas poco, la barriga no se mueve.', 'Por eso la barriga no se mueve: el freno no es cuánto comes, sino cómo está funcionando tu cuerpo.').replace('Si sigues recortando, cada vez', 'Si sigues igual, cada vez');
-    var rangoPot = fmt(potMin) + '-' + fmt(potMax);
+    /* Lo que se le enseña: como punto de partida, entre 400 y 600 kcal más de lo que come ahora
+       (más si la fórmula sale por encima, en quien come muy poco). No es el techo: con el metabolismo acelerado podrá comer más. */
+    var podMin = null, podMax = null;
+    if(actual != null){
+      podMin = r50(actual + Math.max(400, incMin));
+      podMax = r50(actual + Math.max(600, incMax));
+      if(podMax < podMin + 200) podMax = podMin + 200;
+    } else { podMin = potMin; podMax = potMax; }
+    var rangoPot = fmt(podMin) + '-' + fmt(podMax);
     var msg, incHTML = '';
     if(actual == null){
-      msg = 'Con tu metabolismo funcionando bien, <b>podrías perder grasa comiendo entre ' + fmt(potMin) + ' y ' + fmt(potMax) + ' kcal al día</b>. Como no sabes cuánto comes ahora, no puedo decirte cuánto te separa de esa cifra: es lo primero que necesitas conocer.';
-    } else if(incMin > 100){
-      incHTML = '<div class="inc">+' + fmt(r50(incMin)) + ' a +' + fmt(r50(incMax)) + ' kcal<small>más al día que podrías comer perdiendo grasa</small></div>';
-      msg = 'Podrías comer <b>entre ' + fmt(r50(incMin)) + ' y ' + fmt(r50(incMax)) + ' kcal más al día</b> y aun así perder grasa' + (incMax >= 600 ? ': es como sumar una comida entera más a tu día.' : ': es como añadir un buen plato de arroz o patata a tu día.') + ' El problema no es que comas demasiado: tu cuerpo se ha adaptado a comer poco y ha bajado su gasto para protegerse. Por eso en mi método se pierde grasa comiendo más, no menos, y empezando por los hidratos.';
-    } else if(incMax >= -150){
-      msg = 'Comes más o menos lo que tu cuerpo podría usar para perder grasa. Así que, si no bajas, <b>el freno no está en la cantidad</b>: está en qué comes (sobre todo en cuántos hidratos), cuándo lo comes y cómo duermes y te recuperas.';
+      msg = 'Con tu metabolismo funcionando bien, <b>podrías perder grasa comiendo entre ' + fmt(podMin) + ' y ' + fmt(podMax) + ' kcal al día</b>. Como no sabes cuánto comes ahora, no puedo decirte cuánto te separa de esa cifra: es lo primero que necesitas conocer.';
     } else {
-      msg = 'Ahora mismo comes ' + (incMax < -500 ? 'bastante' : 'algo') + ' por encima de lo que tu cuerpo usaría para perder grasa. Tu caso no va de pasar hambre ni de recortar sin más: va de <b>ordenar qué comes y cuándo</b> para que tu cuerpo lo use como energía en vez de guardarlo.';
+      msg = 'Arreglando lo que te está frenando, <b>podrías estar comiendo entre ' + fmt(podMin) + ' y ' + fmt(podMax) + ' kcal al día y empezar a perder grasa</b>. Y esto es solo el punto de partida: a medida que tu metabolismo se acelera, puedes comer todavía más. Por eso en mi método se pierde grasa comiendo más, no menos.';
     }
 
     var E = [];
@@ -116,11 +119,10 @@ JG.iniciar({
 
     var ahoraTxt = tipoActual === 'exacto' ? 'unas ' + actual + ' kcal' : tipoActual === 'rango' ? rangoTxt + ' kcal' : tipoActual === 'estimado' ? 'unas ' + actual + ' kcal (estimado)' : '';
     var resumen = 'Puntuación metabólica ' + s + '/100 (' + titulo + '). ' + (actual != null
-      ? 'Como ' + ahoraTxt + ' y podría comer entre ' + potMin + ' y ' + potMax + ' kcal perdiendo grasa' + (incMin > 100 ? ' (+' + r50(incMin) + ' a +' + r50(incMax) + ' al día)' : '') + '.'
-      : 'No sé cuánto como; podría comer entre ' + potMin + ' y ' + potMax + ' kcal perdiendo grasa.');
+      ? 'Como ' + ahoraTxt + ' y para empezar podría comer entre ' + podMin + ' y ' + podMax + ' kcal perdiendo grasa.'
+      : 'No sé cuánto como; podría comer entre ' + podMin + ' y ' + podMax + ' kcal perdiendo grasa.');
 
-    var acc = ['<b>Prioriza los hidratos</b> en cada comida: fruta madura, zumo natural, miel, patata, arroz o pan de masa madre. Es lo que ' + (s < 75 ? 'saca a tu cuerpo del modo ahorro' : 'mantiene tu metabolismo encendido') + ', baja el estrés, acelera tu metabolismo y mejora tu descanso.'];
-    if(incMin > 100) acc.push('<b>Sube la comida poco a poco</b>, no de golpe, y que lo que añadas sean sobre todo hidratos.');
+    var acc = ['<b>Sube la comida poco a poco y empieza por los hidratos</b>: un plato de arroz o patata más, fruta madura en el desayuno, miel o zumo natural entre horas. Son las calorías que más rápido ' + (s < 75 ? 'sacan a tu cuerpo del modo ahorro' : 'mantienen tu metabolismo encendido') + ', bajan el estrés y mejoran tu descanso.'];
     if(R.proteina === 'pr1') acc.push('Baja un poco la proteína y las claras, y pásale ese espacio a los hidratos.');
     if(R.horas === 's1' || R.horas === 's2') acc.push('Cena con hidratos 2-3 horas antes de dormir: dormirás más profundo y te recuperarás mejor.');
     if(practicas.indexOf('ayuno') > -1 || practicas.indexOf('cafe') > -1) acc.push('Desayuna algo con hidrato y deja el café para al menos 1 hora después de despertarte.');
@@ -133,9 +135,9 @@ JG.iniciar({
         '<div><small>Lo que comes ahora' + (tipoActual === 'estimado' ? ' (estimado)' : '') + '</small><b' + (tipoActual === 'rango' ? ' style="font-size:21px;white-space:nowrap"' : '') + '>' + ahoraBig + '</b><small>kcal/día</small></div>' +
         '<div class="pot"><small>Lo que podrías comer perdiendo grasa</small><b style="font-size:21px;white-space:nowrap">' + rangoPot + '</b><small>kcal/día</small></div>' +
       '</div>' + incHTML + '<div class="destacado">' + msg + '</div>' +
-      '<p class="muted" style="margin-top:10px;font-size:13px">Calculado para tu cuerpo con el metabolismo funcionando bien: moviéndote cada día y entrenando fuerza. Te doy un rango porque cada cuerpo responde distinto.</p></div>' +
+      '<p class="muted" style="margin-top:10px;font-size:13px">Calculado para tu cuerpo con el metabolismo funcionando bien: moviéndote cada día y entrenando fuerza. Te doy un rango porque cada cuerpo responde distinto, y es solo el punto de partida.</p></div>' +
       '<div class="res-bloque"><h3>Lo que te está frenando</h3>' + JG.lista(E.slice(0, 6)) + '</div>' +
       '<div class="res-bloque"><h3>Por dónde empezar</h3>' + JG.acciones(acc.slice(0, 4)) + '</div>';
-    return {html: html, resumen: resumen, puntuacion: s, extra: {actual: actual, tipoActual: tipoActual, potMin: potMin, potMax: potMax}};
+    return {html: html, resumen: resumen, puntuacion: s, extra: {actual: actual, tipoActual: tipoActual, podMin: podMin, podMax: podMax}};
   }
 });
