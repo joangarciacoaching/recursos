@@ -1,36 +1,36 @@
 /* Test: ¿Tu barriga es grasa o hinchazón? (palabra clave CAMBIO10)
-   Funciona sin medirse. La cintura es un extra opcional. */
-function f(id, eje, t){ return {id: id, eje: eje, tipo: 'freq', t: t}; }
+   Sin medirse: la comparación mañana/noche se hace por cómo la notas y cómo te queda la ropa. */
+function f(id, eje, t, extra){ var o = {id: id, eje: eje, tipo: 'freq', t: t}; for(var k in extra || {}) o[k] = extra[k]; return o; }
 var PAGINAS = [
   {titulo: 'Tu barriga en el día a día', preguntas: [
-    f('h1', 'h', 'Por la tarde-noche notas la barriga más dura o hinchada que al despertar.'),
+    f('h1', 'h', 'Por la noche notas la barriga más dura o hinchada que al despertar.', {noSe: 'No me he fijado',
+      ciego: ['Cómo cambia tu barriga durante el día', 'Fíjate mañana al despertar y por la noche, sin medirte: solo cómo la notas y cómo te queda la ropa. Si cambia mucho, gran parte es hinchazón, no grasa.', 'cómo cambia mi barriga durante el día']}),
     f('h2', 'h', 'La ropa te aprieta más por la noche que por la mañana.'),
-    f('h3', 'h', 'Tienes gases, digestiones pesadas o vas irregular al baño.'),
-    f('h4', 'h', 'La barriga te cambia mucho de un día a otro según lo que comes o tu estrés.')
+    f('h3', 'h', 'Tienes gases o digestiones pesadas.'),
+    f('h4', 'h', 'Vas irregular al baño.'),
+    f('h5', 'h', 'La barriga te cambia mucho de un día a otro según lo que comes o tu estrés.')
   ]},
   {titulo: 'Tu energía', preguntas: [
     f('a1', 'a', 'Te levantas cansado aunque duermas 7-8 horas.'),
     f('a2', 'a', 'Tienes las manos o los pies fríos.'),
-    f('a3', 'a', 'Llevas meses comiendo poco, haciendo ayunos o quitando hidratos y la barriga no se va.'),
-    f('a4', 'a', 'Tienes bajones de energía a media tarde o ansia por el dulce por la noche.'),
-    {id:'fuerza', tipo:'una', t:'¿Cuántos días entrenas fuerza a la semana?', ops:[['0','Ninguno'],['1','1-2 días'],['2','3 o más']]}
-  ]},
-  {titulo: 'Tu cintura (opcional)', sub: 'Si tienes una cinta métrica a mano, mídete ahora. Si no, marca «No lo sé» y sigue.', preguntas: [
-    {id:'cintura', tipo:'datos', t:'¿Cuánto mide tu cintura a la altura del ombligo?', ayuda:'De pie, relajado, sin meter barriga y sin apretar la cinta.', campos:[{id:'cm', label:'Cintura (cm)', ph:'92', full:true}], noSe: true,
-      ciego: ['Tu cintura', 'La cintura dice más de tu progreso que la báscula, y no la estás midiendo.']}
+    f('a3', 'a', 'Tienes bajones de energía a media tarde.'),
+    f('a4', 'a', 'Te entra antojo de dulce por la noche.'),
+    {id:'recortes', tipo:'multi', t:'Para bajar la barriga, ¿qué has hecho en los últimos meses?', ayuda:'Marca solo lo que hayas hecho.', ops:[['poco','Comer menos o estar a dieta'],['ayuno','Hacer ayunos'],['hidratos','Quitar o reducir los hidratos'],['cardio','Hacer cardio para quemar'],['ninguna','Nada de esto']]},
+    {id:'fuerza', tipo:'una', t:'¿Cuántos días entrenas fuerza a la semana?', ops:[['0','Ninguno'],['1','1-2 días'],['2','3-4 días'],['3','5 o más']]}
   ]}
 ];
 
 var ACC_H = ['Muévete 10-15 minutos después de cada comida: ayuda a la digestión y baja la hinchazón.',
-  'Reparte la comida y los hidratos durante el día en vez de llegar con hambre y darte el atracón por la noche.',
-  'Apunta durante una semana qué comes y cómo está tu barriga por la noche: verás qué te hincha.'];
-var ACC_A = ['Deja de recortar y come suficiente, con hidratos alrededor del entreno.',
-  'Entrena fuerza 3-4 días a la semana, sesiones de menos de una hora.',
-  'Prioriza dormir 7-8 horas: sin descanso tu cuerpo sigue en modo ahorro.'];
+  'Reparte la fruta y los hidratos durante el día en vez de llegar con mucha hambre a la noche.',
+  'Termina de cenar 2-3 horas antes de dormir, y bebe el agua durante el día, no de golpe por la noche.',
+  'Quita los aceites de semillas (girasol, soja, maíz), también los que van escondidos en envasados: inflaman.'];
+var ACC_A = ['Deja de recortar: fruta o miel en cada comida e hidrato en cada plato, también en la cena.',
+  'Aparca los ayunos y el cardio para quemar: tu cuerpo necesita sentir que la energía no falta.',
+  'Entrena fuerza 3-4 días con pocos ejercicios bien hechos, y duerme 7-8 horas.'];
 var PERFIL = {
-  A: {t:'Tu barriga tiene mucho de hinchazón', p:['Buena noticia: parte de lo que ves en el espejo no es grasa, es hinchazón. Viene de cómo digieres, del estrés y de lo que comes (y cuándo).', 'Esto se puede bajar rápido, sin pasar hambre.'], acc: ACC_H},
-  B: {t:'Tu barriga es grasa y tu cuerpo está en modo ahorro', p:['Llevas tiempo comiendo cada vez menos, y eso le dice a tu cuerpo una cosa: ahorra energía. Por eso vas a medio gas, con frío, cansado y con la barriga ahí.', 'No necesitas recortar más. Necesitas darle a tu cuerpo razones para gastar.'], acc: ACC_A},
-  C: {t:'Tienes un poco de las dos', p:['Parte de tu barriga es hinchazón (digestión, estrés, comida) y parte es grasa que no baja porque tu cuerpo está algo en modo ahorro.', 'La clave es atacar las dos cosas a la vez, sin dietas extremas.'], acc: [ACC_H[0], ACC_H[1], ACC_A[0], ACC_A[1]]}
+  A: {t:'Tu barriga tiene mucho de hinchazón', yo:'Mi barriga tiene mucho de hinchazón', p:['Buena noticia: parte de lo que ves en el espejo no es grasa, es hinchazón. Viene de cómo digieres, del estrés y de lo que comes (y cuándo).', 'Esto se puede bajar rápido, sin pasar hambre.'], acc: ACC_H.slice(0, 3).concat([ACC_H[3]])},
+  B: {t:'Tu barriga es grasa y tu cuerpo está en modo ahorro', yo:'Mi barriga es grasa y mi cuerpo está en modo ahorro', p:['Llevas tiempo dándole a tu cuerpo poca energía, y eso le dice una cosa: ahorra. Por eso vas a medio gas, con frío, cansado y con la barriga ahí.', 'No necesitas recortar más. Por eso en mi método se pierde grasa comiendo más, no menos: dándole a tu cuerpo razones para volver a gastar.'], acc: ACC_A},
+  C: {t:'Tienes un poco de las dos', yo:'Mi barriga tiene un poco de hinchazón y un poco de grasa', p:['Parte de tu barriga es hinchazón (digestión, estrés, comida) y parte es grasa que no baja porque tu cuerpo está algo en modo ahorro.', 'La clave es atacar las dos cosas a la vez, sin dietas extremas.'], acc: [ACC_H[0], ACC_H[2], ACC_A[0], ACC_A[1]]}
 };
 
 JG.iniciar({
@@ -38,27 +38,35 @@ JG.iniciar({
   nombre: 'test de la barriga',
   paginas: PAGINAS,
   cargando: ['Analizando tus respuestas…', 'Separando hinchazón y grasa…', 'Preparando tu resultado…'],
-  ctaTexto: 'Mándame tu resultado y te digo por dónde empezaría yo contigo.',
   calcular: function(R){
-    function suma(eje){ var s = 0, n = 0; PAGINAS.forEach(function(p){ p.preguntas.forEach(function(x){ if(x.eje === eje && R[x.id] != null){ s += parseInt(R[x.id], 10); n++; } }); }); return {s: s, n: n, pct: n ? s / (n * 3) : null}; }
+    function suma(eje){
+      var vals = [];
+      PAGINAS.forEach(function(p){ p.preguntas.forEach(function(x){ if(x.eje === eje && R[x.id] != null && R[x.id] !== JG.NS) vals.push(parseInt(R[x.id], 10) / 3); }); });
+      if(eje === 'a' && R.recortes && R.recortes.length){
+        var r = R.recortes.filter(function(x){ return x !== 'ninguna'; }).length;
+        vals.push(Math.min(r, 3) / 3);
+      }
+      return {n: vals.length, pct: vals.length ? vals.reduce(function(x, y){ return x + y; }, 0) / vals.length : null};
+    }
     var h = suma('h'), a = suma('a');
+    if(h.n + a.n < 2) return {vacio: true};
     var hp = h.pct || 0, ap = a.pct || 0;
     var perfil = (hp >= .55 && hp >= ap) ? 'A' : (ap >= .55 ? 'B' : (hp >= .55 ? 'A' : 'C'));
     var c = PERFIL[perfil];
     var fz = R.fuerza;
     var train = fz === '0' ? 'Ahora mismo no entrenas fuerza. Empezar con 2-3 días a la semana va a cambiar mucho cómo responde tu cuerpo.'
       : fz === '1' ? 'Entrenas fuerza 1-2 días. Subir a 3 días es de lo que más te va a ayudar.'
-      : fz === '2' ? 'Ya entrenas fuerza 3 días o más: bien. Ahora el foco está en comer y descansar acorde a ese entreno.' : '';
-    var cm = R.cintura && R.cintura.cm >= 50 && R.cintura.cm <= 200 ? R.cintura.cm : null;
-    var cintura = cm ? '<div class="destacado" style="margin-top:14px">Tu cintura hoy: <b>' + cm + ' cm</b>. Mídetela mañana nada más despertar, en el mismo sitio: si baja 3 cm o más, gran parte de lo que ves es hinchazón.</div>' : '';
+      : fz === '2' ? 'Entrenas fuerza 3-4 días: es una buena base. Ahora el foco está en comer y descansar acorde a ese entreno.'
+      : fz === '3' ? (ap >= .4 ? 'Entrenas fuerza 5 días o más y tu cuerpo da señales de modo ahorro: seguramente entrenas más de lo que puedes recuperar. Con 3-4 días bien hechos avanzarías más.' : 'Entrenas fuerza 5 días o más. Si notas que no te recuperas, con 3-4 días bien hechos avanzarías más.')
+      : '';
     function nota(x){ return x.pct == null ? 'Sin datos' : x.pct >= .55 ? 'Alto' : x.pct >= .3 ? 'Medio' : 'Bajo'; }
 
-    var resumen = c.t + '. Hinchazón ' + nota(h).toLowerCase() + ', modo ahorro ' + nota(a).toLowerCase() + '.' + (cm ? ' Mi cintura: ' + cm + ' cm.' : '');
+    var resumen = c.yo + '. Hinchazón ' + nota(h).toLowerCase() + ', modo ahorro ' + nota(a).toLowerCase() + '.';
     var html =
       '<div class="res-bloque"><p class="eyebrow">Tu resultado</p><h2 style="font-size:26px">' + c.t + '</h2>' +
-      '<div class="barras" style="margin-top:16px">' + JG.barra('Hinchazón', (h.pct || 0) * 100, nota(h), '#f0a020') + JG.barra('Modo ahorro', (a.pct || 0) * 100, nota(a), '#d70438') + '</div>' + cintura + '</div>' +
+      '<div class="barras" style="margin-top:16px">' + JG.barra('Hinchazón', (h.pct || 0) * 100, nota(h), '#f0a020') + JG.barra('Modo ahorro', (a.pct || 0) * 100, nota(a), '#d70438') + '</div></div>' +
       '<div class="res-bloque">' + c.p.map(function(t){ return '<p style="margin-bottom:10px">' + t + '</p>'; }).join('') + (train ? '<p class="muted">' + train + '</p>' : '') + '</div>' +
       '<div class="res-bloque"><h3>Por dónde empezar</h3>' + JG.acciones(c.acc) + '</div>';
-    return {html: html, resumen: resumen, puntuacion: null, extra: {perfil: perfil, hinchazon: h, ahorro: a, cintura: cm}};
+    return {html: html, resumen: resumen, puntuacion: null, extra: {perfil: perfil, hinchazon: h, ahorro: a, recortes: R.recortes || []}};
   }
 });
