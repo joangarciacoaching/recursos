@@ -20,6 +20,7 @@ var PAGINAS = [
     {id:'energia', tipo:'una', t:'¿Cómo llegas a entrenar?', soloSi: si, ops:[['energia','Con energía'],['cafe','Tirando de café o pre-entreno'],['arrastras','Arrastrándome']]},
     {id:'sueno', tipo:'una', t:'¿Cuántas horas duermes?', ops:[['s1','Menos de 6'],['s2','6-7'],['s3','7 o más']]},
     {id:'comer', tipo:'multi', t:'¿Haces alguna de estas cosas ahora?', ayuda:'Marca solo las que hagas.', ops:[['dieta','Estoy a dieta o comiendo menos para perder grasa'],['ayuno','Hago ayunos'],['entayunas','Entreno en ayunas'],['hidratos','Como pocos hidratos'],['ninguna','Ninguna']]},
+    {id:'habitos', tipo:'multi', t:'¿Haces alguno de estos hábitos?', ayuda:'Marca solo los que hagas.', ops:[['sauna','Sauna'],['frio','Duchas frías o baños de hielo'],['madrugar','Me levanto muy temprano (antes de las 6:00)'],['ninguna','Ninguno']]},
     {id:'cardio', tipo:'una', t:'¿Cuánto cardio sueles hacer?', ops:[['diario','Casi a diario'],['3','3-4 veces por semana'],['2','1-2 veces por semana'],['nada','Nada o solo caminar']]},
     {id:'disponible', tipo:'una', t:'Siendo realista, ¿cuántos días podrías entrenar sin agobiarte?', ops:[['2','2'],['3','3'],['4','4'],['5','5 o más']]}
   ]}
@@ -36,8 +37,9 @@ JG.iniciar({
     var disp = R.disponible ? parseInt(R.disponible, 10) : 3;
     var comer = (R.comer || []).filter(function(x){ return x !== 'ninguna'; });
     var restringe = comer.length > 0;
+    var habitos = (R.habitos || []).filter(function(x){ return x !== 'ninguna'; });
     var cardioAlto = R.cardio === 'diario' || (R.cardio === '3' && restringe);
-    var recBuena = (R.recupera === 'bien' || dias === 0) && R.sueno === 's3' && !restringe && !cardioAlto && R.energia !== 'arrastras';
+    var recBuena = (R.recupera === 'bien' || dias === 0) && R.sueno === 's3' && !restringe && !cardioAlto && !habitos.length && R.energia !== 'arrastras';
     var rec = disp <= 2 ? 2 : (recBuena && disp >= 4 ? 4 : 3);
     var ahorro = R.energia === 'cafe' || R.energia === 'arrastras';
     var intDesconocida = R.intensidad === JG.NS || R.intensidad === 'baja';
@@ -56,6 +58,7 @@ JG.iniciar({
     if(ahorro){ E.push([R.energia === 'cafe' ? 'Entrenas tirando de estimulantes' : 'Llegas a entrenar sin energía', 'Si necesitas café o pre-entreno para rendir, o llegas arrastrándote, tu cuerpo puede estar en modo ahorro. Entrenar más no lo arregla: primero hay que recuperar la energía.']); ef -= 10; }
     if(restringe){ E.push(['Entrenas con poca energía disponible', 'Querer perder grasa no significa comer poco. Si entrenas con dieta, ayunos o pocos hidratos, tu cuerpo no tiene con qué recuperarse y acaba ahorrando. En mi método se pierde grasa comiendo más, no menos, y los hidratos son lo primero.']); ef -= 10; }
     if(cardioAlto){ E.push([R.cardio === 'diario' ? 'Cardio casi a diario' : 'Cardio frecuente con poca comida', 'Compite con tu recuperación y, con poca energía, tu cuerpo compensa gastando menos el resto del día. Caminar te da casi todo lo bueno sin ese coste.']); ef -= 8; }
+    if(habitos.length){ E.push(['Estrés extra encima del entreno', 'Sauna, frío o madrugar mucho también son estrés para tu cuerpo. Con buena energía pueden sumar, pero si ya te cuesta recuperarte, restan.']); ef -= 6; }
     if(R.sueno === 's1'){ E.push(['Duermes muy poco', 'Con menos de 6 horas, por bien que entrenes, tu cuerpo no se recupera.']); ef -= 8; }
     if(dias === 0){ E.push(['Ahora mismo no entrenas', 'Sin fuerza tu cuerpo no tiene motivo para mantener ni ganar músculo. Empezar con ' + rec + ' días bien hechos lo cambia todo.']); ef = Math.min(ef, 40); }
     else if(dias != null && dias <= 2 && rec >= 3){ E.push(['Te falta un día', 'Con 1-2 días es difícil estimular todo el cuerpo lo suficiente. Con uno más notarías el cambio.']); ef -= 8; }
