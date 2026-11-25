@@ -51,10 +51,10 @@ JG.iniciar({
     if(R.rutina === 'libre'){ E.push(['Sin estructura', 'Si cada día haces lo que te apetece, no hay progresión. Sin progresión, tu cuerpo no tiene motivo para cambiar.']); ef -= 12; }
     if(R.rutina === 'clases'){ E.push(['Mucho cansancio, poco estímulo', 'Las clases y el cardio cansan mucho, pero no le dan a tu cuerpo la señal de construir músculo.']); ef -= 15; }
     if(R.intensidad === 'baja'){ E.push(['Te quedas lejos del fallo', 'Si terminas las series pudiendo hacer muchas más, tu cuerpo no tiene que adaptarse. Pocas series, pero de verdad.']); ef -= 15; }
-    if(R.progreso === 'estanca' || R.progreso === 'baja'){ E.push([R.progreso === 'baja' ? 'Vas a peor' : 'Llevas meses estancado', 'Es la señal más clara de que algo no cuadra: o entrenas de más, o te recuperas de menos, o las dos cosas.']); ef -= R.progreso === 'baja' ? 15 : 10; }
+    if(R.progreso === 'estanca' || R.progreso === 'baja'){ E.push([R.progreso === 'baja' ? 'Vas a peor' : 'Llevas meses estancado', 'Es la señal más clara de que tu cuerpo no está asimilando lo que entrenas: algo falla en el estímulo, en la energía que le das o en el descanso.']); ef -= R.progreso === 'baja' ? 15 : 10; }
     if(R.recupera === 'mal'){ E.push(['No te recuperas', 'Estás entrenando por encima de lo que tu cuerpo puede asimilar ahora mismo.']); ef -= 10; }
     if(ahorro){ E.push([R.energia === 'cafe' ? 'Entrenas tirando de estimulantes' : 'Llegas a entrenar sin energía', 'Si necesitas café o pre-entreno para rendir, o llegas arrastrándote, tu cuerpo puede estar en modo ahorro. Entrenar más no lo arregla: primero hay que recuperar la energía.']); ef -= 10; }
-    if(restringe){ E.push(['Entrenas con poca energía disponible', 'Querer perder grasa no significa comer poco. Si entrenas con dieta, ayunos o pocos hidratos, tu cuerpo no tiene con qué recuperarse y acaba ahorrando. En mi método se pierde grasa comiendo más, no menos.']); ef -= 10; }
+    if(restringe){ E.push(['Entrenas con poca energía disponible', 'Querer perder grasa no significa comer poco. Si entrenas con dieta, ayunos o pocos hidratos, tu cuerpo no tiene con qué recuperarse y acaba ahorrando. En mi método se pierde grasa comiendo más, no menos, y los hidratos son lo primero.']); ef -= 10; }
     if(cardioAlto){ E.push([R.cardio === 'diario' ? 'Cardio casi a diario' : 'Cardio frecuente con poca comida', 'Compite con tu recuperación y, con poca energía, tu cuerpo compensa gastando menos el resto del día. Caminar te da casi todo lo bueno sin ese coste.']); ef -= 8; }
     if(R.sueno === 's1'){ E.push(['Duermes muy poco', 'Con menos de 6 horas, por bien que entrenes, tu cuerpo no se recupera.']); ef -= 8; }
     if(dias === 0){ E.push(['Ahora mismo no entrenas', 'Sin fuerza tu cuerpo no tiene motivo para mantener ni ganar músculo. Empezar con ' + rec + ' días bien hechos lo cambia todo.']); ef = Math.min(ef, 40); }
@@ -72,10 +72,11 @@ JG.iniciar({
       : diag === 'Toca empezar' ? 'Empezar con pocos días bien hechos es mucho mejor que lanzarte a entrenar todos los días y dejarlo en un mes.'
       : 'Tienes una buena base. Ahora se trata de ajustar los detalles para que cada sesión rinda al máximo.';
 
-    var acc = ['<b>' + rec + ' días de fuerza a la semana</b>, con un enfoque global en lugar de un músculo al día. Cómo repartirlos depende de tu caso: es justo lo que ajusto con cada cliente.',
+    var acc0 = ['<b>' + rec + ' días de fuerza a la semana</b>, con un enfoque global en lugar de un músculo al día. Cómo repartirlos depende de tu caso: es justo lo que ajusto con cada cliente.',
       '<b>Pocos ejercicios bien elegidos</b> (unos 6-7) y <b>2 series de trabajo</b> por ejercicio, descansando lo necesario entre series.',
       'Cada serie de trabajo, <b>cerca del fallo técnico</b>: hasta la última repetición que sale con buena técnica.',
-      'Entrena con energía: <b>fruta o miel antes y durante el entreno</b> (por ejemplo, un poco de miel en el agua).'];
+      '<b>Prioriza los hidratos</b>, sobre todo alrededor del entreno: patata, arroz o pan antes, y algo rápido durante (por ejemplo, miel en el agua). Es lo que te da energía para rendir y recuperarte.'];
+    var acc = [acc0[3], acc0[0], acc0[1], acc0[2]];
     if(R.progreso !== 'sube') acc.push('Apunta pesos y repeticiones para saber si progresas de una semana a otra.');
     if(cardioAlto) acc.push('Cambia parte del cardio por <b>caminar</b>, y muévete 10-15 minutos después de cada comida.');
 
@@ -85,7 +86,7 @@ JG.iniciar({
       '<div><div class="etiqueta" style="color:' + color + '">Tus días ideales</div><h2>' + diag + '</h2></div></div><p>' + texto + '</p></div>' +
       '<div class="res-bloque"><h3>La eficiencia de tu entreno</h3><div class="barras">' + JG.barra('Resultados por hora de gimnasio', ef, ef + '/100', ef >= 75 ? '#7fb36e' : ef >= 50 ? '#f0a020' : '#d70438') + '</div></div>' +
       '<div class="res-bloque"><h3>Lo que estás haciendo de más (o de menos)</h3>' + JG.lista(E.slice(0, 6)) + '</div>' +
-      '<div class="res-bloque"><h3>Cómo entrenaría yo en tu caso</h3>' + JG.acciones(acc) + '</div>';
+      '<div class="res-bloque"><h3>Por dónde empezar con tu entreno</h3>' + JG.acciones(acc) + '</div>';
     return {html: html, resumen: resumen, puntuacion: ef, extra: {recomendados: rec, diagnostico: diag, comer: comer}};
   }
 });
